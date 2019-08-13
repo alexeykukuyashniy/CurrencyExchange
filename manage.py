@@ -4,13 +4,13 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql.expression import join, and_
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
-import constants
 from datetime import datetime
 import json
-#from models import Rate, Setting, Cash, Currency
+import constants
 
 app = Flask(__name__)
-engine = create_engine('postgresql://postgres:1@localhost:5432/CurrencyExchange')
+#engine = create_engine('postgresql://postgres:1@localhost:5432/CurrencyExchange')
+engine = create_engine('postgres://rmhakrfcehwgbt:f539dde57021225d1099a250471176d12a67aa8c10818795bbec9f4b79c66f72@ec2-184-72-221-140.compute-1.amazonaws.com:5432/d90qi8ks9tjo4u')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
