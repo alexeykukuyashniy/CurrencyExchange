@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  
+  <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
+
+    <div id='header'></div>
+    <div id='root' align="center"></div>
+    
+<script>
+/*ReactDOM.render(
+  <CEHeader ratedate='{{ ratedate }}' usdcash='{{ usdcash }}' />,
+  document.getElementById('header')
+);*/
+  window.ratedate = '{{ratedate}}';
+  window.usdcash = '{{usdcash}}';
+</script>
+
+<input type="hidden" id="hdnRates" value = "{{rates}}" />
+<input type="hidden" id="hdnratedate" value = "{{ratedate}}" />
+<input type="hidden" id="hdnusdcash" value = "{{usdcash}}" />
+
+<script src="../static/js/bundle.js"></script>
+
+
+</html>

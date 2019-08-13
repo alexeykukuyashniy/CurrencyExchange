@@ -1,0 +1,127 @@
+
+#imgLogo {
+    position:absolute;
+    top:5px; 
+    left:5px;
+}
+
+#dvLinks > ul {
+    margin: 0; 
+    padding: 4px; 
+   }
+#dvLinks > ul li {
+    display: inline; 
+    margin-right: 5px; 
+    padding: 3px; 
+
+   }
+
+#dvLinks > ul li a {
+    display: inline; 
+    margin-right: 5px; 
+    padding: 3px; 
+    text-decoration: underline;
+   }
+
+#dvData {
+   /* display: table;   
+    margin: 0 auto;*/
+   
+}
+
+#dvHome {
+    display: table;   
+    margin: 0 auto;
+}
+
+#dvHome table {
+  width: auto !important;
+  margin: 5px;
+}
+
+#dvSettings {
+  display: table;
+  margin: 0 auto;
+}
+
+#dvTransactions{
+  width:99%;
+  margin: 0 auto;
+}
+
+#dvFilters{
+  display: table;
+  width:99%;
+  margin: 0 auto;
+}
+
+#header2 {
+    width:99%;
+    text-align:center;
+    border:1px solid black;
+    margin:5px 5px 5px 5px;
+    padding: 0.45em 0.45em;
+    border-radius:25px;
+    float:left;
+}
+
+a.selected {
+    text-decoration: none !important;
+}
+
+#dvTitle {
+    float:left;
+    width:80%;
+    text-align:center;
+}
+
+#dvLinks {
+    float:right;
+    width:19%;
+    margin-top:8px;
+    marging-right:8px;
+}
+
+.tblSetting > tbody > tr > td > input {
+  text-align:right;
+  width:80px;
+}
+
+.horizontal-rule {
+  border-top: 2px solid black;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom:5px;
+}
+
+/*.p-datatable-scrollable-body-table {
+  width: 100% !important;
+}
+
+.p-datatable table {
+  width: auto !important;
+}*/
+
+
+.p-button {
+    background-color:#f0f0f0 !important;
+    border: 1px solid #e0e0e0 !important;
+    color: black !important;
+    width:100%;
+/*    margin-left:13px;
+    margin-right:13px;*/
+}
+
+.p-button-text {
+  display:none !important;
+}
+
+#dvData2 {
+  width:300px;
+  background-color:#f0f0f0 !important;
+  margin: 0 auto;
+}
+
+.btnRed {
+  color:red !important;
+}

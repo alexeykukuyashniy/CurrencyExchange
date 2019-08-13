@@ -1,5 +1,5 @@
 {
-  "name": "app_name",
+  "name": "CurrencyExchange",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,16 +7,28 @@
     "@types/node": "12.6.6",
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
+    "@types/react-widgets": "^4.3.3",
+    "axios": "^0.19.0",
+    "classnames": "^2.2.6",
+    "primeicons": "^2.0.0",
+    "primereact": "^3.1.7",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
-    "typescript": "3.5.3"
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "^3.0.1",
+    "react-transition-group": "^4.2.1",
+    "react-widgets": "^5.0.0-7",
+    "redux": "^4.0.4",
+    "redux-form": "^8.2.4",
+    "webpack-cli": "^3.3.6"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "compile": "webpack --config webpack.config.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,5 +44,19 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-react": "^7.0.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.0.3",
+    "html-loader": "^0.5.5",
+    "replace-url-html-webpack-plugin": "^1.0.5",
+    "ts-loader": "^6.0.4",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
+    "webpack": "^4.29.6"
   }
 }
