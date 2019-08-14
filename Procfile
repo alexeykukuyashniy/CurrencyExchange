@@ -1,1 +1,1 @@
-web: python manage.py $PORT
+web: gunicorn manage:app
