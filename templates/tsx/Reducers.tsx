@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     IStoreState,
     ISecurityStoreState,
@@ -9,7 +10,7 @@ import {
     NO_TOKEN
 } from "./Constants";
 
-let prevState : IStoreState = {state: VIEW_HOME, data: undefined};
+const [prevState, setPrevState] = useState({state: VIEW_HOME, data: undefined}); // use State hook
 
 export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefined}, action:any) {
 
@@ -30,8 +31,7 @@ export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefin
     }
 
     let newState: IStoreState = {state: stateName, data: action};
-    prevState = newState;
-   // StoreUtils.prevMainState = newState.state;
+    setPrevState(newState);
     console.log('new state:', newState);
     return newState;
 }
