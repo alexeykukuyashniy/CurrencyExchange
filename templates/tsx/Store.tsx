@@ -14,9 +14,6 @@ const store = createStore(
 );
 
 export class StoreUtils {
-   // private static _prevMainState:string = '';
-
-    //public static prevMainState:string;
 
     public static getStoreState() {
         return (store.getState().main as IStoreState).state;
@@ -25,6 +22,17 @@ export class StoreUtils {
     public static isLoggedIn() {
         return store.getState().security.token != undefined;
     };
+
+    // return authorization header with jwt token
+    public static authHeader() {
+    if (StoreUtils.isLoggedIn()) {
+        let st = store.getState().security;
+        let token:string = (st != undefined  && st.token != undefined ? st.token.toString() : "");
+        return { headers: {'Authorization': 'Bearer ' + token }};
+    } else {
+        return {};
+    }
+}
 }
 
 export default store;

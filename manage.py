@@ -6,8 +6,13 @@ from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from datetime import datetime
 import json
-import jwt
+#import jwt
 import constants
+
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 app = Flask(__name__)
 #engine = create_engine('postgresql://postgres:1@localhost:5432/CurrencyExchange')
@@ -17,8 +22,10 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          bind=engine))
 conn = engine.connect()
 app.config['SECRET_KEY'] = 'somesuperrandomsecretkeynoonecancrack'
+jwt = JWTManager(app)
 
 @app.route("/cashamount")
+@jwt_required
 def getCashAmount():
     code = request.args.get("code")
     s = text("select to_char(c.amount,'999,999.99') amount "
@@ -31,6 +38,7 @@ def getCashAmount():
     return jsonData
 
 @app.route("/headerdata")
+@jwt_required
 def headerdata():
     s = text("select cast(s.value as varchar) as value, "
              "to_char(c.amount,'999,999.99') amount, "
@@ -45,6 +53,7 @@ def headerdata():
     return jsonData
 
 @app.route("/rates")
+@jwt_required
 def rates():
     s= text("select c.currencyid, c.code, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
      " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date "
@@ -57,6 +66,7 @@ def rates():
     return jsonRates
 
 @app.route("/homerates")
+@jwt_required
 def homerates():
     s= text("select c.currencyid, c.code, c.name, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
      " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date, "
@@ -80,6 +90,7 @@ def trans():
     return render_template("home.html")
 
 @app.route("/transaction", methods=['POST'])
+@jwt_required
 def transaction():
 
     data = json.loads(request.data)
@@ -89,7 +100,7 @@ def transaction():
     currencyid = data[constants.TR_CURRENCY_ID]
     commission = data[constants.TR_COMMISSION]
     note = data[constants.TR_NOTE]
-    user = "test user" # TODO
+    user = get_jwt_identity() #"test user" # TODO
     s = text("insert into transactions(transactiontypeid, currencyid, amount, date, rate, commission, note, username)"
              "values(:transactiontype, :currencyid, :amount, now(), :rate, :commission, :note, :user)")
     conn.execute(s,amount=amount, rate=rate, transactiontype=transactiontype, currencyid=currencyid, commission=commission, note=note, user=user)
@@ -100,6 +111,7 @@ def updRate(currencyid, buyrate, sellrate, date):
      conn.execute(s, currencyid=currencyid, buyrate=buyrate, sellrate=sellrate, date=date)
 
 @app.route("/saverates", methods=['POST'])
+@jwt_required
 def saveRates():
     rates = json.loads(request.data)
     for rate in rates:
@@ -111,6 +123,7 @@ def updSetting(name, value):
      conn.execute(s,name=name, value=value)
 
 @app.route("/savesettings", methods=['POST'])
+@jwt_required
 def saveSettings():
     data = json.loads(request.data)
     print(data)
@@ -126,6 +139,7 @@ def admin():
     return render_template("home.html")
 
 @app.route("/setting", methods=['GET'])
+@jwt_required
 def setting():
     name = request.args.get("name")
     s = text("""select cast(value as varchar) as value
@@ -137,7 +151,9 @@ def setting():
     return jsonSetting
 
 @app.route("/settings", methods=['GET'])
+@jwt_required
 def settings():
+    print('decoded: ', get_jwt_identity())
     s = text("""select name, 
                        cast(case when name ='RefreshPeriod' then cast(value as int) else value end as varchar) as value 
                   from setting 
@@ -148,6 +164,7 @@ def settings():
     return jsonSettings
 
 @app.route("/transactions", methods=['GET'])
+@jwt_required
 def transactions():
     currencyid = request.args.get("currencyid")
     sDateFrom = request.args.get("dateFrom")
@@ -214,6 +231,7 @@ def transactions():
     return jsonData
 
 @app.route("/currencies", methods=['GET'])
+@jwt_required
 def currencies():
     s = text("""select t.currencyid,
                        t.code,
@@ -238,6 +256,7 @@ def currencies():
     return jsonData
 
 @app.route("/cash", methods=['GET'])
+@jwt_required
 def cash():
     currencyid = request.args.get("currencyid")
     s = text("""select cast(t.amount as varchar) amount
@@ -262,10 +281,15 @@ def doLogin():
         payload = { "user": user#,
                     #"exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=900)
                   }
-        token = jwt.encode(payload, app.config.get('SECRET_KEY'))
+        #token = jwt.encode(payload, app.config.get('SECRET_KEY'))
+        token = create_access_token(identity=user)
+        #print('decoded: ', get_jwt_identity())
         return token
     else:
         return "Incorrect password" # password hardcoded to 1, user name can be any
+
+#def getToken(token):
+#    return jwt.decode(token, app.config.get('SECRET_KEY'))
 
 # catch all incorrect paths
 @app.route('/', defaults={'path': ''})

@@ -2,7 +2,7 @@ import * as React from 'react';
 //import * as ReactDOM from 'react-dom'
 import axios from 'axios';
 import * as constants from './Constants';
-import store from "./Store";
+import store, {StoreUtils} from "./Store";
 import {updateRate} from "./Actions";
 
 interface setting {
@@ -86,7 +86,12 @@ interface ISettings {
 
        fetchData() {
            let that = this;
-           fetch('./settings').then(function (response) {
+          // const requestOptions:RequestInit = { method: 'GET', headers: StoreUtils.authHeader() };
+         //  let st = store.getState().security;
+         //  let token: string = (st != undefined  && st.token != undefined ? st.token.toString() : "");
+        //   const requestOptions:RequestInit = { method: 'GET', headers: {'Authorization': 'Bearer ' + token }}; // Authorization
+         //  console.log('requestOptions: ', StoreUtils.authHeader());
+           fetch('./settings', StoreUtils.authHeader()).then(function (response) {
                if (response.ok) {
                    let commission: string = "";
                    let refreshPeriod: string = "";
@@ -166,12 +171,13 @@ interface ISettings {
                'MinimalCommission': this.state.minimalCommission,
                'BuySellRateMargin': this.state.buySellRateMargin
            };
-           axios.post('/savesettings', data)
+           axios.post('/savesettings', data, StoreUtils.authHeader())
                .then(function (response) {
                    console.log(response);
                    //that.setState({rates:rates});
                    //store.dispatch(updateRate(rates));
                    that.status="Saved";
+                   that.forceUpdate();
                })
                .catch(function (error) {
                    console.log(error);

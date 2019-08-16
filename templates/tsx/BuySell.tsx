@@ -81,7 +81,7 @@ interface BuySellState{
 
        getAmountRest(code:string) {
            let that = this;
-           fetch('./cashamount?code=' + (this.isSell() ? code : 'USD')).then(function (response) {
+           fetch('./cashamount?code=' + (this.isSell() ? code : 'USD'), StoreUtils.authHeader()).then(function (response) {
                if (response.ok) {
 
                    let data = response.json();
@@ -142,7 +142,7 @@ interface BuySellState{
 
        fetchSettings() {
            let that = this;
-           fetch('./settings').then(function (response) {
+           fetch('./settings', StoreUtils.authHeader()).then(function (response) {
                if (response.ok) {
                    let commission: number = 0;
                    let surcharge: number = 0;
@@ -252,7 +252,7 @@ interface BuySellState{
                    "Note": "" // N/A
                };
 
-               axios.post('/transaction', data)
+               axios.post('/transaction', data, StoreUtils.authHeader())
                    .then(function (response) {
                        console.log(response);
                        store.dispatch(saveEdit()); // return to grid

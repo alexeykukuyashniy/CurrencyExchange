@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import * as constants from './Constants';
 import {updateRate} from "./Actions";
-import store from "./Store";
+import store, {StoreUtils} from "./Store";
 import {IRate} from "./Constants";
 
 interface setting {
@@ -38,7 +38,7 @@ const sampleRatesData:IRateData ={success: true,
     quotes:{USDCAD:1.333335,USDCNY:7.060201,USDEUR:0.89007,USDGBP:0.82245,USDILS:3.479698,USDTRY:5.489398}
 }
 
-// Service that receives rates updates periodically according to the "refreshPeriod" setting
+// Service that receives rates periodically according to the "refreshPeriod" setting
 class RateService extends React.Component<{isGetRealData:boolean}, {rates:IRate[], refreshPeriod:number,
               buySellRateMargin: number, isGetRealData:boolean}> {
 
@@ -66,7 +66,7 @@ class RateService extends React.Component<{isGetRealData:boolean}, {rates:IRate[
 
     getDBRates() {
         let that = this;
-        fetch('./rates').then(function (response) {
+        fetch('./rates', StoreUtils.authHeader()).then(function (response) {
             if (response.ok) {
                 let data = response.json();
                 data.then(data => {
@@ -93,7 +93,7 @@ class RateService extends React.Component<{isGetRealData:boolean}, {rates:IRate[
 
     getSettings() {
         let that = this;
-        fetch('./settings').then(function (response) {
+        fetch('./settings', StoreUtils.authHeader()).then(function (response) {
             if (response.ok) {
                 let data = response.json();
                 data.then(data => {
@@ -188,7 +188,7 @@ class RateService extends React.Component<{isGetRealData:boolean}, {rates:IRate[
         console.log('save rates to db');
         console.log('rates to save: ', rates);
         let that = this;
-        axios.post('/saverates', rates)
+        axios.post('/saverates', rates, StoreUtils.authHeader())
             .then(function (response) {
                 console.log(response);
                 that.setState({rates: rates});

@@ -6,6 +6,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import {Dropdown} from 'primereact/dropdown';
 import {Calendar} from 'primereact/calendar';
+import {StoreUtils} from "./Store";
 
 interface ICurrency {
     currencyid: string;
@@ -56,7 +57,7 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
 
        fetchCurrency() {
            let that = this;
-           fetch('./currencies').then(function (response) {
+           fetch('./currencies', StoreUtils.authHeader()).then(function (response) {
                if (response.ok) {
                    let data = response.json();
                    data.then(data => {
@@ -77,7 +78,8 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
            fetch('./transactions?currencyid=' + (this.state.currency && this.state.currency.currencyid ? this.state.currency.currencyid : "0" /*All*/)
                  + '&&dateFrom=' + this.state.dateFrom
                + '&&dateTo=' + this.state.dateTo
-               + '&&transactionTypeMode=' + (this.state.transactionTypeMode ? this.state.transactionTypeMode.value : "")
+               + '&&transactionTypeMode=' + (this.state.transactionTypeMode ? this.state.transactionTypeMode.value : ""),
+               StoreUtils.authHeader()
                 ).then(function (response) {
                if (response.ok) {
                    let data = response.json();

@@ -40,8 +40,11 @@ import {SAVE_EDIT} from "./Constants";
         }
 
         getSetting(){
+            if (!StoreUtils.isLoggedIn())
+                return;
+
             let that = this;
-            fetch('./setting?name=' + constants.MINIMAL_CURRENCY_REST
+            fetch('./setting?name=' + constants.MINIMAL_CURRENCY_REST, StoreUtils.authHeader()
             ).then(function (response) {
                 if (response.ok) {
                     let data = response.json();
@@ -56,8 +59,13 @@ import {SAVE_EDIT} from "./Constants";
         }
 
         fetchData() {
+
+            console.log('fetch home rates: ', StoreUtils.isLoggedIn());
+            if (!StoreUtils.isLoggedIn())
+                return;
+
             let that = this;
-            fetch('./homerates'
+            fetch('./homerates', StoreUtils.authHeader()
             ).then(function (response) {
                 if (response.ok) {
                     console.log('homerates: ', response);
@@ -158,6 +166,12 @@ import {SAVE_EDIT} from "./Constants";
             console.log('About to render Home')
             console.log('store.main: ', store.getState().main);
             console.log('store.security: ', store.getState().security);
+
+            if (StoreUtils.isLoggedIn() && (this.state.rates == undefined || this.state.rates.length == 0))
+            {
+                this.fetchData();
+                return '<div id="dvHome">Loading ...</div>';
+            } else
 
             if (this.state.rates && this.state.rates.length > 0) {
                 console.log('rates: ', this.state.rates);

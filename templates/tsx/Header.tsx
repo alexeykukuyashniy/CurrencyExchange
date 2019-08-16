@@ -37,7 +37,7 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
 
         let that = this;
 
-        fetch('./headerdata'
+        fetch('./headerdata', StoreUtils.authHeader()
         ).then(function (response) {
             if (response.ok) {
                 console.log(response);

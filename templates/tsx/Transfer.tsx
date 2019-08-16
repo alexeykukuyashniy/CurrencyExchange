@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Field, reduxForm, SubmissionError } from 'redux-form'
-import * as constants from "./Constants";
 import store, {StoreUtils} from './Store';
 import {cancelEdit, saveEdit} from "./Actions";
 import axios from 'axios';
@@ -65,7 +64,7 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
        fetchCurrency() {
            let that = this;
-           fetch('./currencies').then(function (response) {
+           fetch('./currencies', StoreUtils.authHeader()).then(function (response) {
                if (response.ok) {
                    let data = response.json();
                    data.then(data => {
@@ -101,7 +100,7 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
            };
            console.log(data);
 
-           axios.post('/transaction', data)
+           axios.post('/transaction', data, StoreUtils.authHeader())
                .then(function (response) {
                    console.log(response);
                    store.dispatch(saveEdit()); // return to grid
