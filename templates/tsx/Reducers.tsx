@@ -22,7 +22,7 @@ export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefin
     }
 
     let stateName: string = action.type;
-    if (action.type == CANCEL_EDIT || action.type == SAVE_EDIT) {
+    if (action.type == CANCEL_EDIT /*|| action.type == SAVE_EDIT*/) {
         stateName = VIEW_HOME;
     } else if (action.type == RATE_UPDATED) {
         stateName = prevState.state; // don't change state name on rate update - just add data
@@ -31,6 +31,7 @@ export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefin
 
     let newState: IStoreState = {state: stateName, data: action};
     prevState = newState;
+   // StoreUtils.prevMainState = newState.state;
     console.log('new state:', newState);
     return newState;
 }

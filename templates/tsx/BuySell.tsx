@@ -5,7 +5,7 @@ import 'primeicons/primeicons.css';
 import { SubmissionError } from 'redux-form';
 import { Field, reduxForm } from 'redux-form'
 import * as constants from "./Constants";
-import store, {getStoreState} from './Store';
+import store, {StoreUtils} from './Store';
 import {cancelEdit, editBuy, editSell, saveEdit} from "./Actions";
 import axios from 'axios';
 
@@ -102,12 +102,12 @@ interface BuySellState{
        }
 
        handleStateChange() {
-           console.log('BS handleStateChange: ', getStoreState(), store.getState());
+           console.log('BS handleStateChange: ', StoreUtils.getStoreState(), store.getState());
            console.log(store.getState().main);
            console.log(store.getState().main.data);
            console.log(store.getState().main.data.data);
 
-           if (getStoreState() == constants.EDIT_BUY_STEP2 || getStoreState() == constants.EDIT_SELL_STEP2)
+           if (StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 || StoreUtils.getStoreState() == constants.EDIT_SELL_STEP2)
            {
                return;
            }
@@ -127,7 +127,7 @@ interface BuySellState{
            for (let i: number = 0; i < rates.length; i++) {
 
                if (currencyid == rates[i].currencyid) {
-                   rate = (getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_BUY_STEP2 ? rates[i].buyrate : rates[i].sellrate);
+                   rate = (StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 ? rates[i].buyrate : rates[i].sellrate);
                }
            }
 
@@ -185,7 +185,7 @@ interface BuySellState{
        }
 
        isSell(){
-          return (getStoreState() == constants.EDIT_SELL || getStoreState() == constants.EDIT_SELL_STEP2);
+          return (StoreUtils.getStoreState() == constants.EDIT_SELL || StoreUtils.getStoreState() == constants.EDIT_SELL_STEP2);
        }
 
        validated(values:any) {
@@ -220,8 +220,8 @@ interface BuySellState{
        // change edit form step: 1 <-> 2
        stepAction()
        {
-           let step = getStoreState() == constants.EDIT_BUY  || getStoreState() == constants.EDIT_SELL? 2 : 1;
-           return getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_BUY_STEP2 ?
+           let step = StoreUtils.getStoreState() == constants.EDIT_BUY  || StoreUtils.getStoreState() == constants.EDIT_SELL? 2 : 1;
+           return StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 ?
                editBuy(this.state.currencyid, step) :
                editSell(this.state.currencyid, step)
        }
@@ -230,7 +230,7 @@ interface BuySellState{
            // print the form values to the console
            console.log('submit');
 
-           if ((getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_SELL)){
+           if ((StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_SELL)){
                store.dispatch(this.stepAction());
                console.log(store.getState());
                this.setState({step:2});
@@ -239,7 +239,7 @@ interface BuySellState{
            {
                console.log('saving...', this.state, values);
                console.log(constants.TR_TRANSACTION_TYPES.BUY);
-               let op:number = (getStoreState() == constants.EDIT_BUY_STEP2 ? constants.TR_TRANSACTION_TYPES.BUY : constants.TR_TRANSACTION_TYPES.SELL);
+               let op:number = (StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 ? constants.TR_TRANSACTION_TYPES.BUY : constants.TR_TRANSACTION_TYPES.SELL);
 
                console.log('params: ', op, ', ', this.state.amount, ', ', this.state.rate, ', ',  this.state.currencyid, ', ', this.state.commissionamount);
 
@@ -272,7 +272,7 @@ interface BuySellState{
 
            let subtotal = this.state.rate != undefined ? Math.round(this.state.amount * this.state.rate * 100.0) / 100.0 : 0;
            console.log('subtotal:', subtotal);
-           let total = Math.round((subtotal + (getStoreState() == constants.EDIT_BUY ? -1 : 1) * commissionAmount) * 100) / 100;
+           let total = Math.round((subtotal + (StoreUtils.getStoreState() == constants.EDIT_BUY ? -1 : 1) * commissionAmount) * 100) / 100;
            this.setState({subtotal:subtotal, commissionamount:commissionAmount, total:total});
        }
 
@@ -325,8 +325,8 @@ let BuySellForm = (props:any) => {
     console.log(currencycode);
     console.log(amount);
     console.log(props.amount);
-    console.log("store state: ", getStoreState());
-    const op:string = (getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_BUY_STEP2 ? "Buy" : "Sell");
+    console.log("store state: ", StoreUtils.getStoreState());
+    const op:string = (StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 ? "Buy" : "Sell");
 
     return (<div id="dvData2">
         <form onSubmit={handleSubmit}>
@@ -353,7 +353,7 @@ let BuySellForm = (props:any) => {
                             type="number"
                             onChange={props.amountChange}
                             value={props.amount}
-                            disabled={getStoreState() == constants.EDIT_BUY_STEP2 || getStoreState() == constants.EDIT_SELL_STEP2}
+                            disabled={StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 || StoreUtils.getStoreState() == constants.EDIT_SELL_STEP2}
                             style={{textAlign:"right"}}
                         />
                     </td>
@@ -401,7 +401,7 @@ let BuySellForm = (props:any) => {
                             <button type="button" onClick={props.cancelClick} style={{margin: "5px 5px"}}>Cancel
                             </button>
                             <button type="button" onClick={props.backClick} style={{margin: "5px 5px"}}
-                                    hidden={getStoreState() != constants.EDIT_BUY_STEP2 && getStoreState() != constants.EDIT_SELL_STEP2}>Back
+                                    hidden={StoreUtils.getStoreState() != constants.EDIT_BUY_STEP2 && StoreUtils.getStoreState() != constants.EDIT_SELL_STEP2}>Back
                             </button>
                             <button type="submit" style={{margin: "5px 5px"}}>{op}</button>
                         </div>

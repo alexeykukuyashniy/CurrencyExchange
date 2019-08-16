@@ -6,7 +6,7 @@ import Transactions from './Transactions';
 import Admin from './Admin';
 import RateService from './RateService';
 import {Provider} from 'react-redux'
-import store, {getStoreState, isLoggedIn} from './Store';
+import store, {StoreUtils} from './Store';
 import CELogin from "./Login";
 import { Redirect } from 'react-router';
 
@@ -32,7 +32,7 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
     }
 
     fetchData() {
-        if (!isLoggedIn())
+        if (!StoreUtils.isLoggedIn())
             return;
 
         let that = this;
@@ -57,9 +57,9 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
     }
 
     handleStateChange() {
-        console.log('Header handleStateChange: ', getStoreState(), store.getState());
+        console.log('Header handleStateChange: ', StoreUtils.getStoreState(), store.getState());
 
-        if (isLoginPage() && isLoggedIn()) {
+        if (isLoginPage() && StoreUtils.isLoggedIn()) {
             console.log('forceUpdate');
             this.fetchData();
         }
@@ -68,9 +68,9 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
     render() {
         console.log('this.state.ratedate ', this.state.rateDate);
 
-        let isVisible: string = !isLoggedIn() ? "none" : "";
+        let isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
 
-        if (!isLoginPage() && !isLoggedIn()) {
+        if (!isLoginPage() && !StoreUtils.isLoggedIn()) {
             window.location.href = '/login'; // redirect to login page
         } else if (!isLoginPage() && (this.state.rateDate == null || this.state.rateDate == undefined)) {
             return 'Loading...';
@@ -104,10 +104,10 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
                     </div>
 
                     <div id="dvData">
-                        {isLoginPage() && isLoggedIn() ?
+                        {isLoginPage() && StoreUtils.isLoggedIn() ?
                             <Redirect to="/"/> : ""
                         }
-                        {!isLoginPage() && !isLoggedIn() ?
+                        {!isLoginPage() && !StoreUtils.isLoggedIn() ?
                             <Redirect to="/login"/> : ""
                         }
                         <Route path='/' component={Home}/>
@@ -115,10 +115,10 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
                         <Route path='/admin' component={Admin}/>
                     </div>
                 </Router>
-                {isLoginPage() && !isLoggedIn() ?
+                {isLoginPage() && !StoreUtils.isLoggedIn() ?
                     <CELogin/> : ""
                 }
-                {isLoggedIn() ?
+                {StoreUtils.isLoggedIn() ?
                     <RateService isGetRealData={false}/> : ""
                 }
             </>

@@ -4,9 +4,10 @@ import {Column} from 'primereact/column';
 import {Button} from 'primereact/button';
 import Transfer from "./Transfer";
 import BuySell from "./BuySell";
-import {editBuy, editSell, editTransfer} from "./Actions";
-import store, {getStoreState} from "./Store";
+import {editBuy, editSell, editTransfer, view} from "./Actions";
+import store, {StoreUtils} from "./Store";
 import * as constants from "./Constants";
+import {SAVE_EDIT} from "./Constants";
 
     class Home extends React.Component<{},{rates: constants.IRate[]|undefined, rate: number,
                                       currencyid: number, currencycode: string, minimalCurrencyRest: number}> {
@@ -56,21 +57,29 @@ import * as constants from "./Constants";
 
         fetchData() {
             let that = this;
-
             fetch('./homerates'
             ).then(function (response) {
                 if (response.ok) {
-                    console.log(response);
+                    console.log('homerates: ', response);
                     let data = response.json();
                     data.then(data => {
                         let rates = (data as constants.IRate[]);
                         console.log('rates: ', rates);
                         that.setState({
                             rates: rates
-                        });
+                        }, that.switchToView);
                     })
                 }
             })
+        }
+
+        // switch to HOME_VIEW state
+        switchToView(){
+            console.log('switchToView');
+            if (StoreUtils.getStoreState() == SAVE_EDIT )
+            {
+                store.dispatch(view());
+            }
         }
 
         flagTemplate(rowData: any, column: string) {
@@ -85,12 +94,12 @@ import * as constants from "./Constants";
             let _rate:number = event.target.attributes["rate"].value;
 
             store.dispatch(op == "buy" ? editBuy(_currencyid, 1) : editSell(_currencyid, 1)); // dispatch action
-            this.setState({/*editMode: EditMode.BuySell,*/ currencycode: _currencyCode, rate: _rate, currencyid: _currencyid},
+            this.setState({currencycode: _currencyCode, rate: _rate, currencyid: _currencyid},
                  () => {console.log('state: ', this.state); this.forceUpdate()});
         }
 
         isViewMode(){
-            return (getStoreState() == constants.VIEW_HOME);
+            return (StoreUtils.getStoreState() == constants.VIEW_HOME);
         }
 
         buySellTemplate(rowData: any, rate:number, op:string){
@@ -126,8 +135,12 @@ import * as constants from "./Constants";
         }
 
         handleStateChange(){
-            console.log('handleStateChange: ', getStoreState(), store.getState());
-            if (getStoreState() == constants.VIEW_HOME) {
+            console.log('handleStateChange: ', StoreUtils.getStoreState(), store.getState());
+            if (StoreUtils.getStoreState() == constants.SAVE_EDIT)
+            {
+                 this.fetchData();
+            } else
+            if (StoreUtils.getStoreState() == constants.VIEW_HOME) {
                 console.log('VIEW_HOME -> force update');
                 this.forceUpdate();
             }
@@ -148,10 +161,10 @@ import * as constants from "./Constants";
 
             if (this.state.rates && this.state.rates.length > 0) {
                 console.log('rates: ', this.state.rates);
-                console.log('store state: ', getStoreState());
-                let editForm = (/*this.state.editMode == EditMode.BuySell*/ getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_SELL ?
+                console.log('store state: ', StoreUtils.getStoreState());
+                let editForm = (StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_SELL ?
                     <BuySell rate={this.state.rate} amount={100} currencycode={this.state.currencycode} currencyid={this.state.currencyid} />
-                    : (getStoreState() == constants.EDIT_TRANSFER ? <Transfer amount={100} currencyid={this.state.currencyid}/> : ""));
+                    : (StoreUtils.getStoreState() == constants.EDIT_TRANSFER ? <Transfer amount={100} currencyid={this.state.currencyid}/> : ""));
 
                 return (<div id="dvHome">
                         <DataTable value={this.state.rates}>

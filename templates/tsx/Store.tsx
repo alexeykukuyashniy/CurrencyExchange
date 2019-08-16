@@ -13,12 +13,18 @@ const store = createStore(
     reducers,{}, undefined
 );
 
-export function getStoreState() {
-    return (store.getState().main as IStoreState).state;
-}
+export class StoreUtils {
+   // private static _prevMainState:string = '';
 
-export function isLoggedIn() {
-    return store.getState().security.token != undefined;
-};
+    //public static prevMainState:string;
+
+    public static getStoreState() {
+        return (store.getState().main as IStoreState).state;
+    }
+
+    public static isLoggedIn() {
+        return store.getState().security.token != undefined;
+    };
+}
 
 export default store;

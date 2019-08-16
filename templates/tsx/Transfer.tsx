@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Field, reduxForm, SubmissionError } from 'redux-form'
 import * as constants from "./Constants";
-import store, {getStoreState} from './Store';
+import store, {StoreUtils} from './Store';
 import {cancelEdit, saveEdit} from "./Actions";
 import axios from 'axios';
 
@@ -207,7 +207,7 @@ let TransferForm = (props:any) => {
     console.log(props.currency);
     console.log(amount);
     console.log(props.amount);
-    console.log("store state: ", getStoreState());
+    console.log("store state: ", StoreUtils.getStoreState());
 
     return (<div id="dvData">
             <form onSubmit={handleSubmit}>
