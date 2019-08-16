@@ -29,7 +29,7 @@ interface ICurrency {
 
 interface IFormData{
     amount:number;
-    currency:any;
+    currencyid:number;
     person:string;
     btnClicked:string;
 }
@@ -38,13 +38,11 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
    class Transfer extends React.Component<TransferProps, TransferState> {
 
-       formData:IFormData = {amount:0,currency:0,person:"",btnClicked:""};
+       formData:IFormData = {amount:0,currencyid:0,person:"",btnClicked:""};
 
        constructor(props: TransferProps) {
            super(props);
 
-           this.amountChange = this.amountChange.bind(this);
-           this.currencyChange = this.currencyChange.bind(this);
            this.submit = this.submit.bind(this);
            this.fetchCurrency = this.fetchCurrency.bind(this);
            this.cancelClick = this.cancelClick.bind(this);
@@ -82,11 +80,7 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
        {
            console.log('saving...');
            console.log('formData:', this.formData, this.state);
-           console.log(this.formData.currency, (this.formData.currency as unknown as ICurrency).currencyid);
-           let currencyid:number|undefined = (this.formData.currency as unknown as ICurrency).currencyid
-           if (currencyid == undefined){
-               currencyid = this.formData.currency;
-           }
+           let currencyid:number = this.formData.currencyid;
 
            let transactionType:number = (this.formData.btnClicked == "send" ? TR_TRANSACTION_TYPES.SEND : TR_TRANSACTION_TYPES.RECEIVE);
 
@@ -112,7 +106,7 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
        validateForm() {
            let errors = "";
-           console.log('validating: ', this.formData.amount, this.formData.person, this.formData.currency, this.state.currencies);
+           console.log('validating: ', this.formData.amount, this.formData.person, this.formData.currencyid, this.state.currencies);
            if (this.formData.amount < 10) {
                errors = errors + "Amount should not be less than 10. \n";
            }
@@ -121,11 +115,8 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
            }
            if (this.formData.btnClicked == "send" && this.state.currencies) {
                let currencies = this.state.currencies;
-               let currencyid:number|undefined = (this.formData.currency as unknown as ICurrency).currencyid;
-               if (currencyid == undefined) {
-                   currencyid = this.formData.currency as number;
-               }
-               console.log('currencyid: ', currencyid);
+               let currencyid:number = this.formData.currencyid as number;
+
                let amountRest:number = 0;
                for(let i=0; i<currencies.length; i++) {
                    if (currencies[i].currencyid == currencyid) {
@@ -154,21 +145,6 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
            this.validateForm();
        }
 
-       amountChange(event:any) {
-           console.log('amount change');
-           console.log('value:', event.target.value);
-           let amount: number = event.target.value;
-           if (amount >= 10) {
-               this.setState({amount: amount});
-           }
-       }
-
-       currencyChange(event:any) {
-           console.log('currency change');
-           console.log('value:', event.target.value);
-           this.setState({currencyid: event.target.value as number});
-       }
-
        cancelClick(event:any) {
            console.log('cancel clicked');
            store.dispatch(cancelEdit());
@@ -185,14 +161,12 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
            TransferForm = reduxForm({
                form: 'Transfer',
-               initialValues:{amount:100,currency:this.state.currencyid, person:""}
+               initialValues:{amount: 100, currencyid: this.state.currencyid, person: ""}
            })(TransferForm);
 
            return (<TransferForm onSubmit={this.submit}
-                                amountChange={this.amountChange}
-                                currencyChange={this.currencyChange}
                                 cancelClick={this.cancelClick}
-                                currency={this.state.currencyid}
+                                currencyid={this.state.currencyid}
                                 currencies={this.state.currencies}
                                 amount={this.state.amount}
                    />
@@ -201,9 +175,9 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
    }
 
 let TransferForm = (props:any) => {
-    const {error, handleSubmit, amountChange, currencyChange, cancelClick, currency, currencies, amount} = props;
+    const {error, handleSubmit, cancelClick, currencyid, currencies, amount} = props;
     console.log(props);
-    console.log(props.currency);
+    console.log(props.currencyid);
     console.log(amount);
     console.log(props.amount);
     console.log("store state: ", StoreUtils.getStoreState());
@@ -220,14 +194,14 @@ let TransferForm = (props:any) => {
                     </tr>
                     <tr>
                         <td>
-                            <label htmlFor="currency">Currency:</label>
+                            <label htmlFor="currencyid">Currency:</label>
                         </td>
                         <td align="right">
                             <Field
-                                name="currency"
+                                name="currencyid"
                                 component="select"
-                                onChange={currencyChange}
-                                style={{width: "100%"}}
+                                 style={{width: "100%"}}
+                                value={currencyid}
                             >
                                 {currencies.map((c: ICurrency) => (
                                         <option key={c.currencyid} value={c.currencyid}>
@@ -247,7 +221,6 @@ let TransferForm = (props:any) => {
                                 name="amount"
                                 component="input"
                                 type="number"
-                                onChange={props.amountChange}
                                 value={amount}
                                 style={{textAlign: "right"}}
                             />
