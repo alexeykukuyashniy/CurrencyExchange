@@ -1,25 +1,24 @@
 import { reducer as reduxFormReducer } from 'redux-form';
-import { Provider, connect } from 'react-redux'
-import { applyMiddleware, combineReducers, createStore } from 'redux';
-import {homeReducer} from './Reducers';
+import { combineReducers, createStore } from 'redux';
+import {homeReducer, securityReducer} from './Reducers';
 import {IStoreState} from "./Constants";
 
 let reducers = combineReducers({
     form: reduxFormReducer,
-    home: homeReducer
+    main: homeReducer,
+    security: securityReducer
 });
 
 const store = createStore(
     reducers,{}, undefined
 );
 
-/*interface IStoreState{
-    state : string;
-    data:any|undefined;
-}*/
-
 export function getStoreState() {
-    return (store.getState().home as IStoreState).state;
+    return (store.getState().main as IStoreState).state;
 }
+
+export function isLoggedIn() {
+    return store.getState().security.token != undefined;
+};
 
 export default store;

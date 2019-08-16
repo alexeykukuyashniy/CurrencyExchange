@@ -6,9 +6,9 @@ import {
     EDIT_SELL_STEP2,
     EDIT_TRANSFER,
     RATE_UPDATED,
-    SAVE_EDIT
+    SAVE_EDIT,
+    TOKEN_SET
 } from "./Constants";
-import { createStore } from 'redux';
 
 export function editBuy(currencyid:number,step:number){
     const action = {
@@ -53,6 +53,14 @@ export function updateRate(data:any){
     const action = {
         type: RATE_UPDATED,
         data: data
+    }
+    return action;
+}
+
+export function setToken(data:any){
+    const action = {
+        type: TOKEN_SET,
+        token: data
     }
     return action;
 }

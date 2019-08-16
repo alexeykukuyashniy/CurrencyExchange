@@ -6,23 +6,8 @@
   
   <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
 
-    <div id='header'></div>
-    <div id='root' align="center"></div>
-    
-<script>
-/*ReactDOM.render(
-  <CEHeader ratedate='{{ ratedate }}' usdcash='{{ usdcash }}' />,
-  document.getElementById('header')
-);*/
-  window.ratedate = '{{ratedate}}';
-  window.usdcash = '{{usdcash}}';
-</script>
+  <div id='header'></div>
+  <div id='root' align="center"></div>
 
-<input type="hidden" id="hdnRates" value = "{{rates}}" />
-<input type="hidden" id="hdnratedate" value = "{{ratedate}}" />
-<input type="hidden" id="hdnusdcash" value = "{{usdcash}}" />
-
-<script src="../static/js/bundle.js"></script>
-
-
+  <script src="../static/js/bundle.js"></script>
 </html>

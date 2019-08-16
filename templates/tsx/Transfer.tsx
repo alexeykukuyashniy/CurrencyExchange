@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Field, reduxForm, SubmissionError } from 'redux-form'
 import * as constants from "./Constants";
 import store, {getStoreState} from './Store';
-import {cancelEdit, editTransfer, saveEdit} from "./Actions";
+import {cancelEdit, saveEdit} from "./Actions";
 import axios from 'axios';
 
 import 'primereact/resources/themes/nova-light/theme.css';
@@ -35,7 +35,7 @@ interface IFormData{
     btnClicked:string;
 }
 
- //enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
+const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
    class Transfer extends React.Component<TransferProps, TransferState> {
 
@@ -89,16 +89,18 @@ interface IFormData{
                currencyid = this.formData.currency;
            }
 
+           let transactionType:number = (this.formData.btnClicked == "send" ? TR_TRANSACTION_TYPES.SEND : TR_TRANSACTION_TYPES.RECEIVE);
+
            let data = {
-               "TransactionType": this.formData.btnClicked == "send" ? constants.TR_TRANSACTION_TYPES.SEND : constants.TR_TRANSACTION_TYPES.RECEIVE,
-               "CurrencyID": currencyid, //this.state.currencyid,
-               "Amount": this.formData.amount,//this.state.amount,
+               "TransactionType": transactionType,
+               "CurrencyID": currencyid,
+               "Amount": this.formData.amount,
                "Note": this.formData.person,
                "Rate": 0, // N/A
                "Commission": 0 // N/A
            };
            console.log(data);
-           //console.log(jsonData);
+
            axios.post('/transaction', data)
                .then(function (response) {
                    console.log(response);
@@ -182,6 +184,11 @@ interface IFormData{
            console.log(this.props);
            console.log(this.state);
 
+           TransferForm = reduxForm({
+               form: 'Transfer',
+               initialValues:{amount:100,currency:this.state.currencyid, person:""}
+           })(TransferForm);
+
            return (<TransferForm onSubmit={this.submit}
                                 amountChange={this.amountChange}
                                 currencyChange={this.currencyChange}
@@ -220,10 +227,7 @@ let TransferForm = (props:any) => {
                             <Field
                                 name="currency"
                                 component="select"
-
-
                                 onChange={currencyChange}
-
                                 style={{width: "100%"}}
                             >
                                 {currencies.map((c: ICurrency) => (
@@ -246,7 +250,6 @@ let TransferForm = (props:any) => {
                                 type="number"
                                 onChange={props.amountChange}
                                 value={amount}
-                                //  validate={minValue10(10)}
                                 style={{textAlign: "right"}}
                             />
                         </td>
@@ -297,9 +300,6 @@ let TransferForm = (props:any) => {
     )
 }
 
-TransferForm = reduxForm({
-    form: 'Transfer',
-    initialValues:{amount:100,currency:{currencyid:2, code:'USD'}, person:""}
-})(TransferForm);
+
 
 export default Transfer;

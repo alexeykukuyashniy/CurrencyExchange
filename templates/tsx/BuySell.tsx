@@ -14,7 +14,6 @@ interface IFormData{
 }
 
 interface ISettings {
-  //  refreshPeriod: number;
     commission: number;
     surcharge: number;
     minimalCommission: number;
@@ -45,8 +44,6 @@ interface BuySellState{
     settings:ISettings;
     step:number|undefined; // needed to refresh the form on back/next button click
 }
-
- //enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
    class BuySell extends React.Component<BuySellProps, BuySellState> {
 
@@ -106,20 +103,20 @@ interface BuySellState{
 
        handleStateChange() {
            console.log('BS handleStateChange: ', getStoreState(), store.getState());
-           console.log(store.getState().home);
-           console.log(store.getState().home.data);
-           console.log(store.getState().home.data.data);
+           console.log(store.getState().main);
+           console.log(store.getState().main.data);
+           console.log(store.getState().main.data.data);
 
            if (getStoreState() == constants.EDIT_BUY_STEP2 || getStoreState() == constants.EDIT_SELL_STEP2)
            {
                return;
            }
 
-           if (store.getState().home == undefined || store.getState().home.data == undefined || store.getState().home.data.data == undefined) {
+           if (store.getState().main == undefined || store.getState().main.data == undefined || store.getState().main.data.data == undefined) {
                console.log('no data. exiting 1');
                return;
            }
-           let rates = store.getState().home.data.data as constants.IRate[];
+           let rates = store.getState().main.data.data as constants.IRate[];
            if (rates == undefined) {
                console.log('no data. exiting 2');
                return;
@@ -236,7 +233,6 @@ interface BuySellState{
            if ((getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_SELL)){
                store.dispatch(this.stepAction());
                console.log(store.getState());
-               //this.forceUpdate();
                this.setState({step:2});
            } else
            if (this.validated(values))
@@ -244,10 +240,9 @@ interface BuySellState{
                console.log('saving...', this.state, values);
                console.log(constants.TR_TRANSACTION_TYPES.BUY);
                let op:number = (getStoreState() == constants.EDIT_BUY_STEP2 ? constants.TR_TRANSACTION_TYPES.BUY : constants.TR_TRANSACTION_TYPES.SELL);
-               //let amount = this.state.amount
+
                console.log('params: ', op, ', ', this.state.amount, ', ', this.state.rate, ', ',  this.state.currencyid, ', ', this.state.commissionamount);
-              // let data = {'test1' : 'test1 val'};
-              // let jsonData = JSON.stringify(data);
+
                let data = {
                    "TransactionType": op,
                    "Amount": this.state.amount,
@@ -256,7 +251,7 @@ interface BuySellState{
                    "Commission": this.state.commissionamount,
                    "Note": "" // N/A
                };
-               //console.log(jsonData);
+
                axios.post('/transaction', data)
                    .then(function (response) {
                        console.log(response);
@@ -299,8 +294,7 @@ interface BuySellState{
            console.log('back clicked');
            store.dispatch(this.stepAction());
            console.log(store.getState());
-           //this.forceUpdate();
-           this.setState({step:1}/*, this.forceUpdate*/);
+           this.setState({step:1});
        }
 
        render() {
@@ -322,11 +316,7 @@ interface BuySellState{
            )
        }
    }
-/*
-const minValue = (min:number) => (value:number) =>
-    value && value < min ? "Must be at least ${min}" : undefined;
-const minValue10 = minValue(10);
-*/
+
 let BuySellForm = (props:any) => {
     // "step" - just passed inside to force form refresh
     const {error, handleSubmit, amountChange, cancelClick, backClick, currencycode, rate, amount, subtotal, commissionamount, total, step} = props;
@@ -337,7 +327,7 @@ let BuySellForm = (props:any) => {
     console.log(props.amount);
     console.log("store state: ", getStoreState());
     const op:string = (getStoreState() == constants.EDIT_BUY || getStoreState() == constants.EDIT_BUY_STEP2 ? "Buy" : "Sell");
-    // console.log(this.amount);
+
     return (<div id="dvData2">
         <form onSubmit={handleSubmit}>
             <table>
@@ -363,7 +353,6 @@ let BuySellForm = (props:any) => {
                             type="number"
                             onChange={props.amountChange}
                             value={props.amount}
-                           // validate={minValue10(10)}
                             disabled={getStoreState() == constants.EDIT_BUY_STEP2 || getStoreState() == constants.EDIT_SELL_STEP2}
                             style={{textAlign:"right"}}
                         />

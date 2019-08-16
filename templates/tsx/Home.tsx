@@ -74,7 +74,7 @@ import * as constants from "./Constants";
         }
 
         flagTemplate(rowData: any, column: string) {
-            let src: string = "./static/images/" + rowData.code + ".png";
+            let src: string = "./static/images/" + rowData.code.toLowerCase() + ".png";
             return <img src={src}/>;
         }
 
@@ -137,12 +137,14 @@ import * as constants from "./Constants";
             let url = window.location.href;
 
             // don't render if not on Home page
-            if (url.indexOf('trans') > 0 || url.indexOf('admin') > 0)
+            if (url.indexOf('login') > 0 || url.indexOf('trans') > 0 || url.indexOf('admin') > 0)
             {
                 return '';
             }
 
             console.log('About to render Home')
+            console.log('store.main: ', store.getState().main);
+            console.log('store.security: ', store.getState().security);
 
             if (this.state.rates && this.state.rates.length > 0) {
                 console.log('rates: ', this.state.rates);

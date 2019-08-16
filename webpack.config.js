@@ -11,7 +11,7 @@ module.exports = {
   mode: 'development',
   context: paths.src,
   entry: {
-    app: ['./tsx/Home.tsx','./tsx/Header.tsx','./tsx/Admin.tsx','./tsx/Transactions.tsx']
+    app: ['./tsx/Home.tsx','./tsx/Header.tsx','./tsx/Admin.tsx','./tsx/Transactions.tsx','./tsx/Login.tsx','./tsx/Constants.tsx']
   },
   output: {
     filename: 'bundle.js',

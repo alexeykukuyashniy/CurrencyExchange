@@ -1,20 +1,11 @@
 import * as React from 'react';
-import {useState} from 'react';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {ColumnGroup} from 'primereact/columngroup';
-import {Row} from 'primereact/row';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-//import {Button} from 'primereact/button';
 import {Dropdown} from 'primereact/dropdown';
 import {Calendar} from 'primereact/calendar';
-
-interface setting {
-  name: string;
-  value: string;
-}
 
 interface ICurrency {
     currencyid: string;
@@ -37,13 +28,6 @@ interface ITransactions {
     username: string;
 }
 
-interface ITransactionsState {
-    data:ITransactions[]|undefined,
-    currency:ICurrency|undefined,
-    dateFrom:Date|undefined,
-    dateTo:Date|undefined,
-    transactionTypeMode:ITransactionTypeFilter|undefined
-}
 const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'}, {value:1,name:'Buy/Sell'}, {value:2,name:'Buy'},
     {value:3,name:'Sell'}, {value:4,name:'Send/Receive'}, {value:5,name:'Send'},
     {value:6,name:'Receive'}, {value:7,name:'Debit'}, {value:8,name:'Credit'}];
@@ -53,7 +37,6 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
 
        loaded: boolean = false;
        currencies: ICurrency[] = [];
-       //const [transactionTypeMode, setTransactionTypeMode] = useState<ITransactionTypeFilter>(transactionTypeFilterData[0]);
 
        constructor(props: any) {
            super(props);
@@ -63,7 +46,6 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
            this.onDataFilterChange = this.onDataFilterChange.bind(this);
            this.state = {
                data: [],
-               //currencyid: "0",
                currency: undefined,
                dateFrom: undefined,
                dateTo: undefined,
@@ -102,13 +84,10 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
                    data.then(data => {
                        let trans = (data as ITransactions[]);
 
-                       //console.log(JSON.stringify(trans));
                        console.log(trans);
 
-                       //let prevState = that.state;
                        that.setState({
-                           data: trans/*,
-                           currencyid : prevState.currencyid*/
+                           data: trans
                        });
                        that.loaded = true;
                        console.log('transactions fecthed');
@@ -127,16 +106,12 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
            console.log('e.value:' + cur)
            console.log('e.value->currencyid:' + cur.currencyid)
            this.setState({currency: cur}, () => this.fetchData());
-           //console.log("set currencyid: " + (this.state.currency && this.state.currency.currencyid ? this.state.currency.currencyid : "empty"));
-           //this.fetchData();
-           //  this.forceUpdate();
        }
 
        render() {
            if (!this.loaded) {
-               return 'Loading...'
+               return <div id="dvSettings">Loading...</div>
            }
-
 
            // if (this.state.data && this.state.data.length > 0) {
            console.log('rendering');
@@ -154,16 +129,6 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
                          onChange={(e) => this.setState({transactionTypeMode: e.value as ITransactionTypeFilter}, () => this.fetchData())}
                           optionLabel="name"/>
            </div>;
-
-         /*  let footerGroup = <ColumnGroup>
-               <Row>
-                   <Column colSpan={2} footer="Total:"/>
-                   <Column footer="444"/>
-                   <Column colSpan={1}/>
-                   <Column footer="$531,020"/>
-                   <Column colSpan={3}/>
-               </Row>
-           </ColumnGroup>;*/
 
            let sumAmount:number = 0;
            let sumCommission:number = 0;

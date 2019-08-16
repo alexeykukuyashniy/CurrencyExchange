@@ -125,3 +125,8 @@ a.selected {
 .btnRed {
   color:red !important;
 }
+
+#dvLogin {
+  display: table;
+  margin: 17% auto;
+}

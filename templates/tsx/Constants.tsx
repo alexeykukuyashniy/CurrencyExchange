@@ -17,24 +17,19 @@ export const CANCEL_EDIT = 'CANCEL_EDIT';
 export const SAVE_EDIT = 'SAVE_EDIT';
 export const EDIT_TRANSFER = 'EDIT_TRANSFER';
 export const RATE_UPDATED = 'RATE_UPDATED';
+export const TOKEN_SET = 'TOKEN_SET';
+export const NO_TOKEN = 'NO_TOKEN';
 
-// tarnsaction fields
-export const TR_AMOUNT = 'Amount';
-//export const TR_AMOUNT_USD = 'AmountUSD';
-export const TR_RATE = 'Rate';
-export const TR_TRANSACTION_TYPE = 'TransactionType'; // transaction type: 1 - buy, 2 - sell, 3 - send, 4 - receive
-export const TR_CURRENCY_ID = 'CurrencyID';
-export const TR_COMMISSION = 'Commission';
-
-/*export const TR_OP_BUY = 1;
-export const TR_OP_SELL = 2;
-export const TR_OP_SEND = 3;
-export const TR_OP_RECEIVE = 4;*/
 export const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
 export interface IStoreState{
     state : string;
-    data:any|undefined;
+    data: any|undefined;
+}
+
+export interface ISecurityStoreState{
+    state: string;
+    token: string|undefined;
 }
 
 export interface IRate {

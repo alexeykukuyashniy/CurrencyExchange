@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request 
+from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql.expression import join, and_
@@ -6,6 +6,7 @@ from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from datetime import datetime
 import json
+import jwt
 import constants
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 conn = engine.connect()
+app.config['SECRET_KEY'] = 'somesuperrandomsecretkeynoonecancrack'
 
 @app.route("/cashamount")
 def getCashAmount():
@@ -69,6 +71,7 @@ def homerates():
     return jsonRates
 
 @app.route("/")
+@app.route("/home")
 def home():
     return render_template("home.html")
 
@@ -244,6 +247,25 @@ def cash():
     data = conn.execute(s, currencyid = currencyid).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
+
+@app.route("/login", methods=['GET'])
+def login():
+    return render_template("home.html")
+
+@app.route("/doLogin", methods=['POST'])
+def doLogin():
+    data = json.loads(request.data)
+    user = data["user"]
+    pwd = data["pwd"]
+
+    if (pwd == "1"):
+        payload = { "user": user#,
+                    #"exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=900)
+                  }
+        token = jwt.encode(payload, app.config.get('SECRET_KEY'))
+        return token
+    else:
+        return "Incorrect password" # password hardcoded to 1, user name can be any
 
 # catch all incorrect paths
 @app.route('/', defaults={'path': ''})
