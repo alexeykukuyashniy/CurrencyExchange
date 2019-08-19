@@ -1,24 +1,15 @@
 import * as React from 'react';
-//import * as ReactDOM from 'react-dom'
 import axios from 'axios';
 import * as constants from './Constants';
 import store, {StoreUtils} from "./Store";
-import {updateRate} from "./Actions";
+import {updateSettings} from "./Actions";
 
 interface setting {
   name: string;
   value: string;
 }
 
-interface ISettings {
-    refreshPeriod: string;
-    commission: string;
-    surcharge: string;
-    minimalCommission: string;
-    buySellRateMargin: string;
-}
-
-   class Admin extends React.Component<{},ISettings> {
+   class Admin extends React.Component<{},constants.ISettings> {
 
        loaded: boolean = false;
        status:string = "";
@@ -45,7 +36,7 @@ interface ISettings {
            console.log(event.target.attributes.getNamedItem("name").value);
            console.log(event.target);
            let name: string = event.target.attributes.getNamedItem("name").value;
-           let updState: ISettings = this.state;
+           let updState: constants.ISettings = this.state;
            let val: string = event.target.value;
 
            if (val.length > 0) {
@@ -173,10 +164,8 @@ interface ISettings {
            };
            axios.post('/savesettings', data, StoreUtils.authHeader())
                .then(function (response) {
-                   console.log(response);
-                   //that.setState({rates:rates});
-                   //store.dispatch(updateRate(rates));
                    that.status="Saved";
+                   store.dispatch(updateSettings(data));
                    that.forceUpdate();
                })
                .catch(function (error) {

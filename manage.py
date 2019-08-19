@@ -1,12 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.sql.expression import join, and_
 from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from datetime import datetime
 import json
-#import jwt
 import constants
 
 from flask_jwt_extended import (
@@ -24,6 +22,7 @@ conn = engine.connect()
 app.config['SECRET_KEY'] = 'somesuperrandomsecretkeynoonecancrack'
 jwt = JWTManager(app)
 
+# returns cash rest amount for the given currency
 @app.route("/cashamount")
 @jwt_required
 def getCashAmount():
@@ -37,6 +36,7 @@ def getCashAmount():
     jsonData = json.dumps([dict(d) for d in data])
     return jsonData
 
+# returns data for the page header: USD cash rest amount, rates last updated date, "minimal currency rest" setting value
 @app.route("/headerdata")
 @jwt_required
 def headerdata():
@@ -52,6 +52,7 @@ def headerdata():
     jsonData = json.dumps([dict(d) for d in data])
     return jsonData
 
+# returns currency exchange rates data
 @app.route("/rates")
 @jwt_required
 def rates():
@@ -65,6 +66,7 @@ def rates():
     jsonRates = json.dumps([dict(r) for r in rates])
     return jsonRates
 
+# returns home page grid data
 @app.route("/homerates")
 @jwt_required
 def homerates():
@@ -80,15 +82,18 @@ def homerates():
     jsonRates = json.dumps([dict(r) for r in rates])
     return jsonRates
 
+# provides response to the "/" and '/home' urls
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template("home.html")
 
+# provides response to the "/trans" url
 @app.route("/trans")
 def trans():
     return render_template("home.html")
 
+# saves new transaction data to the database
 @app.route("/transaction", methods=['POST'])
 @jwt_required
 def transaction():
@@ -106,10 +111,12 @@ def transaction():
     conn.execute(s,amount=amount, rate=rate, transactiontype=transactiontype, currencyid=currencyid, commission=commission, note=note, user=user)
     return 'OK'
 
+# updates exchange rate data for the given currency
 def updRate(currencyid, buyrate, sellrate, date):
      s = text("update rate set buyrate=:buyrate,sellrate=:sellrate,date=:date where currencyid=:currencyid")
      conn.execute(s, currencyid=currencyid, buyrate=buyrate, sellrate=sellrate, date=date)
 
+# saves currencies exchange rates to the database
 @app.route("/saverates", methods=['POST'])
 @jwt_required
 def saveRates():
@@ -134,10 +141,12 @@ def saveSettings():
     updSetting(constants.BUY_SELL_RATE_MARGIN, data[constants.BUY_SELL_RATE_MARGIN])
     return 'OK'
 
+# provides response to the "/admin" url
 @app.route("/admin", methods=['GET'])
 def admin():
     return render_template("home.html")
 
+#returns particular setting value
 @app.route("/setting", methods=['GET'])
 @jwt_required
 def setting():
@@ -150,6 +159,7 @@ def setting():
     jsonSetting = json.dumps([dict(s) for s in settings])
     return jsonSetting
 
+# returns settings data
 @app.route("/settings", methods=['GET'])
 @jwt_required
 def settings():
@@ -163,6 +173,7 @@ def settings():
     jsonSettings = json.dumps([dict(s) for s in settings])
     return jsonSettings
 
+# returns transactions data filtered according to the given filters.
 @app.route("/transactions", methods=['GET'])
 @jwt_required
 def transactions():
@@ -230,6 +241,7 @@ def transactions():
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
 
+# returns list of all currencies with addition of 'All' option
 @app.route("/currencies", methods=['GET'])
 @jwt_required
 def currencies():
@@ -249,12 +261,13 @@ def currencies():
                 	   ) t
                  order by case when t.code = 'All' then 0
                 	           when t.code = 'USD' then 1
-                			   else 2 end"""
+                			   else 2 end, t.code"""
          )
     data = conn.execute(s).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
 
+# returns rest amount in the office cash for the given currency
 @app.route("/cash", methods=['GET'])
 @jwt_required
 def cash():
@@ -271,6 +284,7 @@ def cash():
 def login():
     return render_template("home.html")
 
+# check password, if correct returns jwt access token, otherwise returns error message
 @app.route("/doLogin", methods=['POST'])
 def doLogin():
     data = json.loads(request.data)
@@ -278,18 +292,11 @@ def doLogin():
     pwd = data["pwd"]
 
     if (pwd == "1"):
-        payload = { "user": user#,
-                    #"exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=900)
-                  }
-        #token = jwt.encode(payload, app.config.get('SECRET_KEY'))
-        token = create_access_token(identity=user)
-        #print('decoded: ', get_jwt_identity())
+        payload = { "user": user }
+        token = create_access_token(identity = user)
         return token
     else:
         return "Incorrect password" # password hardcoded to 1, user name can be any
-
-#def getToken(token):
-#    return jwt.decode(token, app.config.get('SECRET_KEY'))
 
 # catch all incorrect paths
 @app.route('/', defaults={'path': ''})

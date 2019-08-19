@@ -45,6 +45,7 @@ interface BuySellState{
     step:number|undefined; // needed to refresh the form on back/next button click
 }
 
+// currency buy/sell edit form
    class BuySell extends React.Component<BuySellProps, BuySellState> {
 
        formData:IFormData = {amount:0};
@@ -222,8 +223,8 @@ interface BuySellState{
        {
            let step = StoreUtils.getStoreState() == constants.EDIT_BUY  || StoreUtils.getStoreState() == constants.EDIT_SELL? 2 : 1;
            return StoreUtils.getStoreState() == constants.EDIT_BUY || StoreUtils.getStoreState() == constants.EDIT_BUY_STEP2 ?
-               editBuy(this.state.currencyid, step) :
-               editSell(this.state.currencyid, step)
+               editBuy(step) :
+               editSell(step)
        }
 
        submit(values: any) {

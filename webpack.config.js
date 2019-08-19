@@ -8,7 +8,7 @@ const paths = {
 //const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   context: paths.src,
   entry: {
     app: ['./tsx/Home.tsx','./tsx/Header.tsx','./tsx/Admin.tsx','./tsx/Transactions.tsx','./tsx/Login.tsx','./tsx/Constants.tsx']

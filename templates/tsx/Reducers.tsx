@@ -10,7 +10,8 @@ import {
     NO_TOKEN
 } from "./Constants";
 
-const [prevState, setPrevState] = useState({state: VIEW_HOME, data: undefined}); // use State hook
+//const [prevState, setPrevState] = useState({state: VIEW_HOME, data: undefined}); // use State hook
+let prevState:IStoreState = {state: VIEW_HOME, data: undefined};
 
 export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefined}, action:any) {
 
@@ -31,7 +32,8 @@ export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefin
     }
 
     let newState: IStoreState = {state: stateName, data: action};
-    setPrevState(newState);
+    //setPrevState(newState);
+    prevState = newState;
     console.log('new state:', newState);
     return newState;
 }

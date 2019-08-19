@@ -13,12 +13,15 @@ const store = createStore(
     reducers,{}, undefined
 );
 
+// utilities class
 export class StoreUtils {
 
+    // returns main store state
     public static getStoreState() {
         return (store.getState().main as IStoreState).state;
     }
 
+    // returns true if user logged in
     public static isLoggedIn() {
         return store.getState().security.token != undefined;
     };

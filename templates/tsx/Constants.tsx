@@ -19,6 +19,7 @@ export const EDIT_TRANSFER = 'EDIT_TRANSFER';
 export const RATE_UPDATED = 'RATE_UPDATED';
 export const TOKEN_SET = 'TOKEN_SET';
 export const NO_TOKEN = 'NO_TOKEN';
+export const SETTINGS_UPDATED = 'SETTINGS_UPDATED';
 
 export const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
 
@@ -40,4 +41,12 @@ export interface IRate {
     sellrate:number;
     date:string;
     amount:number|undefined;
+}
+
+export interface ISettings {
+    refreshPeriod: string;
+    commission: string;
+    surcharge: string;
+    minimalCommission: string;
+    buySellRateMargin: string;
 }

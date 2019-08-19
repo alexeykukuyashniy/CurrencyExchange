@@ -9,6 +9,7 @@ import {Provider} from 'react-redux'
 import store, {StoreUtils} from './Store';
 import CELogin from "./Login";
 import { Redirect } from 'react-router';
+import CESubHeader from "./SubHeader";
 
 interface IHeaderData {
     value: string;
@@ -20,15 +21,21 @@ function isLoginPage(){
     return window.location.href.indexOf('login') > 0;
 }
 
-class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, rateDate: string, minimalCurrencyRest:number}> {
+// main application component - container of all others
+class CEHeader extends React.Component<{},{}> {
+
+    unsubscribe: any;
 
     constructor(props: any) {
         super(props);
-        this.state = {usdCash: 0, usdCashStr: '', rateDate: '', minimalCurrencyRest: 0};
         this.fetchData = this.fetchData.bind(this);
         this.handleStateChange = this.handleStateChange.bind(this);
         this.fetchData();
-        store.subscribe(this.handleStateChange);
+        this.unsubscribe = store.subscribe(this.handleStateChange);
+    }
+
+    componentWillUnmount(): void {
+        this.unsubscribe();
     }
 
     fetchData() {
@@ -66,14 +73,10 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
     }
 
     render() {
-        console.log('this.state.ratedate ', this.state.rateDate);
-
         let isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
 
         if (!isLoginPage() && !StoreUtils.isLoggedIn()) {
             window.location.href = '/login'; // redirect to login page
-        } else if (!isLoginPage() && (this.state.rateDate == null || this.state.rateDate == undefined)) {
-            return 'Loading...';
         } else
             return <>
                 <img id="imgLogo" src="./static/images/logo.png" alt="Logo" style={{display: isVisible}}/>
@@ -97,12 +100,7 @@ class CEHeader extends React.Component<{},{usdCash: number, usdCashStr: string, 
                             </li>
                         </ul>
                     </div>
-
-                    <div id='header2' style={{display: isVisible}}>
-                        <span>Exchange Rates shown as per {this.state.rateDate}. You have <span
-                            style={{color: this.state.usdCash <= this.state.minimalCurrencyRest ? "red" : "black"}}>{this.state.usdCash}</span> USD left.</span>
-                    </div>
-
+                    <CESubHeader/>
                     <div id="dvData">
                         {isLoginPage() && StoreUtils.isLoggedIn() ?
                             <Redirect to="/"/> : ""

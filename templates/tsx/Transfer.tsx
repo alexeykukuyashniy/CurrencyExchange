@@ -120,12 +120,11 @@ const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
                let amountRest:number = 0;
                for(let i=0; i<currencies.length; i++) {
                    if (currencies[i].currencyid == currencyid) {
-                       amountRest = currencies[i].amountrest;
+                       amountRest = currencies[i].amountrest as number;
                        break;
                    }
                }
-               console.log('amountRest: ', amountRest);
-               if (this.formData.amount > amountRest) {
+               if (this.formData.amount - amountRest > 0) {
                    errors = errors + "Amount should not be greater than " + amountRest +".";
                }
            }

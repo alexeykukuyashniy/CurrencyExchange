@@ -12,6 +12,8 @@ import {SAVE_EDIT} from "./Constants";
     class Home extends React.Component<{},{rates: constants.IRate[]|undefined, rate: number,
                                       currencyid: number, currencycode: string, minimalCurrencyRest: number}> {
 
+        unsubscribe:any;
+
         constructor(props: any) {
             super(props);
             this.buySellClick = this.buySellClick.bind(this);
@@ -33,10 +35,14 @@ import {SAVE_EDIT} from "./Constants";
                 minimalCurrencyRest: 0
             };
 
-            store.subscribe(this.handleStateChange);
+            this.unsubscribe = store.subscribe(this.handleStateChange);
 
             this.fetchData();
             this.getSetting();
+        }
+
+        componentWillUnmount(): void {
+            this.unsubscribe();
         }
 
         getSetting(){
@@ -97,12 +103,12 @@ import {SAVE_EDIT} from "./Constants";
 
         buySellClick(event: any) {
             let op:string = event.target.attributes["op"].value;
-            let _currencyCode:string = event.target.attributes["currencycode"].value;
-            let _currencyid:number = event.target.attributes["currencyid"].value;
-            let _rate:number = event.target.attributes["rate"].value;
+            let currencyCode:string = event.target.attributes["currencycode"].value;
+            let currencyid:number = event.target.attributes["currencyid"].value;
+            let rate:number = event.target.attributes["rate"].value;
 
-            store.dispatch(op == "buy" ? editBuy(_currencyid, 1) : editSell(_currencyid, 1)); // dispatch action
-            this.setState({currencycode: _currencyCode, rate: _rate, currencyid: _currencyid},
+            store.dispatch(op == "buy" ? editBuy(1) : editSell(1)); // dispatch action
+            this.setState({currencycode: currencyCode, rate: rate, currencyid: currencyid},
                  () => {console.log('state: ', this.state); this.forceUpdate()});
         }
 
@@ -150,6 +156,7 @@ import {SAVE_EDIT} from "./Constants";
             } else
             if (StoreUtils.getStoreState() == constants.VIEW_HOME) {
                 console.log('VIEW_HOME -> force update');
+                this.getSetting();
                 this.forceUpdate();
             }
         }
