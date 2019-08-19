@@ -9,6 +9,7 @@
     margin: 0; 
     padding: 4px; 
    }
+
 #dvLinks > ul li {
     display: inline; 
     margin-right: 5px; 
@@ -94,22 +95,11 @@ a.selected {
   margin-bottom:5px;
 }
 
-/*.p-datatable-scrollable-body-table {
-  width: 100% !important;
-}
-
-.p-datatable table {
-  width: auto !important;
-}*/
-
-
 .p-button {
     background-color:#f0f0f0 !important;
     border: 1px solid #e0e0e0 !important;
     color: black !important;
     width:100%;
-/*    margin-left:13px;
-    margin-right:13px;*/
 }
 
 .p-button-text {

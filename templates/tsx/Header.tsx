@@ -90,7 +90,7 @@ class CEHeader extends React.Component<{},{}> {
                     <div id="dvLinks" style={{display: isVisible}}>
                         <ul>
                             <li>
-                                <NavLink to="/" activeClassName="selected">Home</NavLink>
+                                <NavLink to="/home" activeClassName="selected">Home</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/trans" activeClassName="selected">Transactions</NavLink>
@@ -103,7 +103,7 @@ class CEHeader extends React.Component<{},{}> {
                     <CESubHeader/>
                     <div id="dvData">
                         {isLoginPage() && StoreUtils.isLoggedIn() ?
-                            <Redirect to="/"/> : ""
+                            <Redirect to="/home"/> : ""
                         }
                         {!isLoginPage() && !StoreUtils.isLoggedIn() ?
                             <Redirect to="/login"/> : ""
