@@ -10,13 +10,13 @@ interface setting {
     value: string;
 }
 
-export interface ISettings {
+/*export interface ISettings {
     RefreshPeriod: string;
     Commission: string;
     Surcharge: string;
     MinimalCommission: string;
     BuySellRateMargin: string;
-}
+}*/
 
 interface IRateData{
   privacy:string|undefined;
@@ -238,16 +238,19 @@ class RateService extends React.Component<{isGetRealData:boolean}, {rates:IRate[
         console.log('Rate service handleStateChange: ', StoreUtils.getStoreState(), store.getState());
         if (StoreUtils.getStoreState() == constants.SETTINGS_UPDATED)
         {
-            let settings = store.getState().main.data.data as ISettings;
+            let settings = store.getState().main.data.data as constants.ISettings;
             if (settings != undefined) {
-                let buySellRateMargin: number = settings.BuySellRateMargin as unknown as number;
-                let refreshPeriod: number = settings.RefreshPeriod as unknown as number;
+                let buySellRateMargin: number = settings.buySellRateMargin as unknown as number;
+                let refreshPeriod: number = settings.refreshPeriod as unknown as number;
                 if (buySellRateMargin != this.state.buySellRateMargin) {
                     this.setState({buySellRateMargin: buySellRateMargin}); // apply new "buy/sell rate margin" when changed
                 }
                 if (refreshPeriod != this.state.refreshPeriod) {
                     // restart service with new "refresh period" setting
-                    clearInterval(this.timerId);
+                    if (this.timerId != undefined)
+                    {
+                        clearInterval(this.timerId);
+                    }
                     this.setState({refreshPeriod: refreshPeriod}, this.doWork);
                 }
             }

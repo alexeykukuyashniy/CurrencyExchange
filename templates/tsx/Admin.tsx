@@ -156,14 +156,23 @@ interface setting {
 
        saveSettings(event: any) {
            let that = this;
-           let data = {
+           let data:constants.ISettings =
+               {
+                   refreshPeriod: this.state.refreshPeriod,
+                   commission: this.state.commission,
+                   surcharge: this.state.surcharge,
+                   minimalCommission: this.state.minimalCommission,
+                   buySellRateMargin: this.state.buySellRateMargin
+               };
+
+           let dataSave = {
                'RefreshPeriod': this.state.refreshPeriod,
                'Commission': this.state.commission,
                'Surcharge': this.state.surcharge,
                'MinimalCommission': this.state.minimalCommission,
                'BuySellRateMargin': this.state.buySellRateMargin
            };
-           axios.post('/savesettings', data, StoreUtils.authHeader())
+           axios.post('/savesettings', dataSave, StoreUtils.authHeader())
                .then(function (response) {
                    that.status="Saved";
                    store.dispatch(updateSettings(data));

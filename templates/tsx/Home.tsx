@@ -4,7 +4,7 @@ import {Column} from 'primereact/column';
 import {Button} from 'primereact/button';
 import Transfer from "./Transfer";
 import BuySell from "./BuySell";
-import {editBuy, editSell, editTransfer, view} from "./Actions";
+import {cancelEdit, editBuy, editSell, editTransfer, view} from "./Actions";
 import store, {StoreUtils} from "./Store";
 import * as constants from "./Constants";
 import {SAVE_EDIT} from "./Constants";
@@ -36,6 +36,8 @@ import {SAVE_EDIT} from "./Constants";
             };
 
             this.unsubscribe = store.subscribe(this.handleStateChange);
+
+            store.dispatch(cancelEdit()); // set to VIEW_HOME state
 
             this.fetchData();
             this.getSetting();

@@ -7,7 +7,7 @@ import {
     SAVE_EDIT,
     VIEW_HOME,
     TOKEN_SET,
-    NO_TOKEN
+    NO_TOKEN, SETTINGS_UPDATED
 } from "./Constants";
 
 //const [prevState, setPrevState] = useState({state: VIEW_HOME, data: undefined}); // use State hook
@@ -27,7 +27,7 @@ export function homeReducer(state:IStoreState = {state: VIEW_HOME, data: undefin
     if (action.type == CANCEL_EDIT /*|| action.type == SAVE_EDIT*/) {
         stateName = VIEW_HOME;
     } else if (action.type == RATE_UPDATED) {
-        stateName = prevState.state; // don't change state name on rate update - just add data
+        stateName = prevState.state == SETTINGS_UPDATED ? VIEW_HOME : prevState.state; // don't change state name on rate update - just add data
         console.log('leave state name as is: ', stateName);
     }
 

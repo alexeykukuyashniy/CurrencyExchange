@@ -58,7 +58,7 @@ class CESubHeader extends React.Component<{},{usdCash: number, usdCashStr: strin
     handleStateChange() {
         console.log('SubHeader handleStateChange: ', StoreUtils.getStoreState(), store.getState());
 
-        if (!StoreUtils.isLoggedIn() || StoreUtils.getStoreState() == constants.SETTINGS_UPDATED) {
+        if (!StoreUtils.isLoggedIn() /*|| StoreUtils.getStoreState() == constants.SETTINGS_UPDATED*/) {
             return;
         }
 
@@ -80,7 +80,7 @@ class CESubHeader extends React.Component<{},{usdCash: number, usdCashStr: strin
         if (rates == undefined) {
             console.log('no data. exiting 2');
             return;
-        } else {
+        } else if (rates[0] != undefined && rates[0].date != undefined){
             console.log('SH rates:', rates);
             this.setState({rateDate: rates[0].date.substr(0, 19)});
         }
