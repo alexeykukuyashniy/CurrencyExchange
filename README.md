@@ -1,4 +1,4 @@
-###Airport Currency Exchange
+### Airport Currency Exchange
 
 The application models the Airport Currency Exchange office work.
 It has Login page and 3 main pages: Home (default), Transactions and Admin.
@@ -63,6 +63,6 @@ If the setting is set to 0 then service will stop its work.
 
 Date/time exchange rates last received by the service will be immediately updated on the Home/Transactions/Admin page header.
 
-Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
+**Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
 
-Tech Note. Hooks not used since they are applicable to the functional components while class components used in the application.
+**Tech Note. Hooks not used since they are applicable to the functional components only while class components used in the application.

@@ -6,7 +6,8 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import {Dropdown} from 'primereact/dropdown';
 import {Calendar} from 'primereact/calendar';
-import {StoreUtils} from "./Store";
+import store, {StoreUtils} from "./Store";
+import {cancelEdit} from "./Actions";
 
 interface ICurrency {
     currencyid: string;
@@ -52,6 +53,7 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'
                dateTo: undefined,
                transactionTypeMode : transactionTypeFilterData[0]
            };
+           store.dispatch(cancelEdit()); // in case edit form is active
            this.fetchCurrency();
        }
 

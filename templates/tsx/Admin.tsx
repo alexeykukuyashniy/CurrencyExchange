@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import * as constants from './Constants';
 import store, {StoreUtils} from "./Store";
-import {updateSettings} from "./Actions";
+import {cancelEdit, updateSettings} from "./Actions";
 
 interface setting {
   name: string;
@@ -29,6 +29,7 @@ interface setting {
                minimalCommission: "",
                buySellRateMargin: ""
            };
+           store.dispatch(cancelEdit()); // in case edit form is active
        }
 
        handleInputChange(event: any) {
