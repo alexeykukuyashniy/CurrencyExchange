@@ -65,4 +65,11 @@ Date/time exchange rates last received by the service will be immediately update
 
 **Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
 
-**Tech Note. Hooks not used since they are applicable to the functional components only while class components used in the application.
+
+#### Technical Info.
+
+Database: PostgreSQL. 
+Back End: base language - Python. Flask, SQLAlchemy, JWT authentication.
+Front End: base language TypeScript. React, Redux, Redux-Form.
+Note. Hooks not used since they are applicable to the functional components only while class components used in the application.
+
