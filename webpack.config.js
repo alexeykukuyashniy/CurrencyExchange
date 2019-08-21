@@ -3,9 +3,8 @@ const paths = {
     src: path.resolve(__dirname, 'templates'),
     dist: path.resolve(__dirname, 'static/js')
 };
-//const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-//const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const TSLintPlugin = require('tslint-webpack-plugin');
 
 module.exports = {
   mode: 'production',
@@ -53,13 +52,9 @@ module.exports = {
     ]
   },
   plugins: [
-        //new CleanWebpackPlugin(),
-        //new HtmlWebpackPlugin({
-        //    template: './home.html'
-        //}), // генерация html-файла на основе нашего шаблона
-       // new CopyWebpackPlugin([
-       //     { from: '../static', to: 'static' }
-       // ])
+       new TSLintPlugin({
+            files: ['./templates/tsx/*.tsx']
+        })
     ],
   resolve: {
     extensions: [ '.tsx', '.ts', '.js', '.jsx' ]

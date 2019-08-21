@@ -30,11 +30,11 @@ interface ITransactions {
     username: string;
 }
 
-const transactionTypeFilterData: ITransactionTypeFilter[] = [{value:0,name:'All'}, {value:1,name:'Buy/Sell'}, {value:2,name:'Buy'},
-    {value:3,name:'Sell'}, {value:4,name:'Send/Receive'}, {value:5,name:'Send'},
-    {value:6,name:'Receive'}, {value:7,name:'Debit'}, {value:8,name:'Credit'}];
+const transactionTypeFilterData: ITransactionTypeFilter[] = [{value: 0, name:'All'}, {value: 1, name: 'Buy/Sell'}, {value: 2, name: 'Buy'},
+    {value: 3, name: 'Sell'}, {value: 4, name: 'Send/Receive'}, {value: 5, name: 'Send'},
+    {value: 6, name: 'Receive'}, {value: 7, name: 'Debit'}, {value: 8, name: 'Credit'}];
 
-   class Transactions extends React.Component<{},{data:ITransactions[]|undefined, currency:ICurrency|undefined,
+   class Transactions extends React.Component<{},{data: ITransactions[]|undefined, currency:ICurrency|undefined,
                                              dateFrom:Date|undefined, dateTo:Date|undefined,transactionTypeMode:ITransactionTypeFilter|undefined}> {
 
        loaded: boolean = false;

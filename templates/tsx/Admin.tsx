@@ -12,7 +12,8 @@ interface setting {
    class Admin extends React.Component<{},constants.ISettings> {
 
        loaded: boolean = false;
-       status:string = "";
+       status: string = "";
+
        constructor(props: any) {
            super(props);
 
@@ -174,7 +175,7 @@ interface setting {
            };
            axios.post('/savesettings', dataSave, StoreUtils.authHeader())
                .then(function (response) {
-                   that.status="Saved";
+                   that.status = "Saved";
                    store.dispatch(updateSettings(data));
                    that.forceUpdate();
                })

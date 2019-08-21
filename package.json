@@ -56,6 +56,7 @@
     "replace-url-html-webpack-plugin": "^1.0.5",
     "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
+    "tslint-webpack-plugin": "^2.1.0",
     "typescript": "^3.5.3",
     "webpack": "^4.29.6"
   }

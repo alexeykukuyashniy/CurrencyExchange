@@ -1,179 +1,177 @@
-import * as React from 'react';
-import { Field, reduxForm, SubmissionError } from 'redux-form'
-import store, {StoreUtils} from './Store';
+import * as React from "react";
+import { Field, reduxForm, SubmissionError } from "redux-form";
+import store, {StoreUtils} from "./Store";
 import {cancelEdit, saveEdit} from "./Actions";
-import axios from 'axios';
+import axios from "axios";
 
-import 'primereact/resources/themes/nova-light/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
+import "primereact/resources/themes/nova-light/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
-interface TransferProps {
+interface ITransferProps {
     amount: number;
     currencyid: number;
 }
 
-interface TransferState {
+interface ITransferState {
     amount: number;
+    currencies: ICurrency[]|undefined;
     currencyid: number;
     person: string;
-    currency:ICurrency|undefined;
-    currencies:ICurrency[]|undefined;
 }
 
 interface ICurrency {
-    currencyid: number;
+    amountrest: number;
     code: string;
-    amountrest:number;
+    currencyid: number;
 }
 
-interface IFormData{
-    amount:number;
-    currencyid:number;
-    person:string;
-    btnClicked:string;
+interface IFormData {
+    amount: number;
+    btnClicked: string;
+    currencyid: number;
+    person: string;
 }
 
-const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4};
+const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4}
 
-   class Transfer extends React.Component<TransferProps, TransferState> {
+class Transfer extends React.Component<ITransferProps, ITransferState> {
 
-       formData:IFormData = {amount:0,currencyid:0,person:"",btnClicked:""};
+    private formData: IFormData = {amount: 0, currencyid: 0, person: "", btnClicked: ""};
 
-       constructor(props: TransferProps) {
-           super(props);
+    constructor(props: ITransferProps) {
+        super(props);
 
-           this.submit = this.submit.bind(this);
-           this.fetchCurrency = this.fetchCurrency.bind(this);
-           this.cancelClick = this.cancelClick.bind(this);
-           this.validateForm = this.validateForm.bind(this);
-           this.saveFormData = this.saveFormData.bind(this);
+        this.submit = this.submit.bind(this);
+        this.fetchCurrency = this.fetchCurrency.bind(this);
+        this.cancelClick = this.cancelClick.bind(this);
+        this.validateForm = this.validateForm.bind(this);
+        this.saveFormData = this.saveFormData.bind(this);
 
-           this.state = {
-               amount: props.amount,
-               currencyid: props.currencyid,
-               person:"",
-               currency:undefined,
-               currencies:undefined
-           };
-           console.log('initial state:', this.state);
-           this.fetchCurrency();
-       }
+        this.state = {
+            amount: props.amount,
+            currencies: undefined,
+            currencyid: props.currencyid,
+            person: "",
+        };
+        console.log("initial state:", this.state);
+        this.fetchCurrency();
+    }
 
-       fetchCurrency() {
-           let that = this;
-           fetch('./currencies', StoreUtils.authHeader()).then(function (response) {
-               if (response.ok) {
-                   let data = response.json();
-                   data.then(data => {
-                       let currencies:ICurrency[] = (data as ICurrency[]);
-                       currencies = currencies.slice(1); // remove "ALL"
-                       that.setState({currencies: currencies});
-                       console.log(currencies[0].toString());
-                       console.log('currencies fetched');
-                   })
-               }
-           })
-       }
+    public render() {
+        if (this.state.currencies === undefined) {
+            return "Loading...";
+        }
+        console.log("rendering Transfer");
+        console.log(this.props);
+        console.log(this.state);
 
-       saveFormData()
-       {
-           console.log('saving...');
-           console.log('formData:', this.formData, this.state);
-           let currencyid:number = this.formData.currencyid;
+        TransferForm = reduxForm({
+            form: "Transfer",
+            initialValues: {amount: 100, currencyid: this.state.currencyid, person: ""}
+        })(TransferForm);
 
-           let transactionType:number = (this.formData.btnClicked == "send" ? TR_TRANSACTION_TYPES.SEND : TR_TRANSACTION_TYPES.RECEIVE);
+        return (<TransferForm onSubmit={this.submit}
+                              cancelClick={this.cancelClick}
+                              currencyid={this.state.currencyid}
+                              currencies={this.state.currencies}
+                              amount={this.state.amount}
+            />
+        );
+    }
 
-           let data = {
-               "TransactionType": transactionType,
-               "CurrencyID": currencyid,
-               "Amount": this.formData.amount,
-               "Note": this.formData.person,
-               "Rate": 0, // N/A
-               "Commission": 0 // N/A
-           };
-           console.log(data);
+    private fetchCurrency() {
+        const that = this;
+        fetch("./currencies", StoreUtils.authHeader()).then((response) => {
+            if (response.ok) {
+                const data = response.json();
+                data.then((d) => {
+                    let currencies: ICurrency[] = (d as ICurrency[]);
+                    currencies = currencies.slice(1); // remove "ALL"
+                    that.setState({currencies});
+                    console.log(currencies[0].toString());
+                    console.log("currencies fetched");
+                });
+            }
+        });
+    }
 
-           axios.post('/transaction', data, StoreUtils.authHeader())
-               .then(function (response) {
-                   console.log(response);
-                   store.dispatch(saveEdit()); // return to grid
-               })
-               .catch(function (error) {
-                   console.log(error);
-               });
-       }
+    private saveFormData() {
+        console.log("saving...");
+        console.log("formData:", this.formData, this.state);
+        const currencyid: number = this.formData.currencyid;
 
-       validateForm() {
-           let errors = "";
-           console.log('validating: ', this.formData.amount, this.formData.person, this.formData.currencyid, this.state.currencies);
-           if (this.formData.amount < 10) {
-               errors = errors + "Amount should not be less than 10. \n";
-           }
-           if (this.formData.person.trim().length == 0) {
-               errors = errors + "Person is required. \n";
-           }
-           if (this.formData.btnClicked == "send" && this.state.currencies) {
-               let currencies = this.state.currencies;
-               let currencyid:number = this.formData.currencyid as number;
+        const transactionType: number = (this.formData.btnClicked === "send" ?
+            TR_TRANSACTION_TYPES.SEND : TR_TRANSACTION_TYPES.RECEIVE);
 
-               let amountRest:number = 0;
-               for(let i=0; i<currencies.length; i++) {
-                   if (currencies[i].currencyid == currencyid) {
-                       amountRest = currencies[i].amountrest as number;
-                       break;
-                   }
-               }
-               if (this.formData.amount - amountRest > 0) {
-                   errors = errors + "Amount should not be greater than " + amountRest +".";
-               }
-           }
+        const data = {
+            Amount: this.formData.amount,
+            Commission: 0, // N/A
+            CurrencyID: currencyid,
+            Note: this.formData.person,
+            Rate: 0, // N/A
+            TransactionType: transactionType
+        };
+        console.log(data);
 
-           if (errors.length > 0) {
-               throw new SubmissionError({_error: errors});
-           } else {
-               this.saveFormData();
-           }
-       }
+        axios.post("/transaction", data, StoreUtils.authHeader())
+            .then((response) => {
+                console.log(response);
+                store.dispatch(saveEdit()); // return to grid
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
-       submit(values: any) {
-           console.log('submit');
-           console.log(values);
+    private validateForm() {
+        let errors = "";
+        console.log("validating: ", this.formData.amount, this.formData.person, this.formData.currencyid,
+            this.state.currencies);
+        if (this.formData.amount < 10) {
+            errors = errors + "Amount should not be less than 10. \n";
+        }
+        if (this.formData.person.trim().length === 0) {
+            errors = errors + "Person is required. \n";
+        }
+        if (this.formData.btnClicked === "send" && this.state.currencies) {
+            const currencies = this.state.currencies;
+            const currencyid: number = this.formData.currencyid as number;
 
-           this.formData = (values as IFormData);
-           this.validateForm();
-       }
+            let amountRest: number = 0;
+            for (const c of currencies) {
+                if (c.currencyid === currencyid) {
+                    amountRest = c.amountrest as number;
+                    break;
+                }
+            }
+            if (this.formData.amount - amountRest > 0) {
+                errors = errors + "Amount should not be greater than " + amountRest + ".";
+            }
+        }
 
-       cancelClick(event:any) {
-           console.log('cancel clicked');
-           store.dispatch(cancelEdit());
-       }
+        if (errors.length > 0) {
+            throw new SubmissionError({_error: errors});
+        } else {
+            this.saveFormData();
+        }
+    }
 
-       render() {
-           if (this.state.currencies == undefined)
-           {
-               return 'Loading...'
-           }
-           console.log('rendering Transfer')
-           console.log(this.props);
-           console.log(this.state);
+    private submit(values: any) {
+        console.log("submit");
+        console.log(values);
 
-           TransferForm = reduxForm({
-               form: 'Transfer',
-               initialValues:{amount: 100, currencyid: this.state.currencyid, person: ""}
-           })(TransferForm);
+        this.formData = (values as IFormData);
+        this.validateForm();
+    }
 
-           return (<TransferForm onSubmit={this.submit}
-                                cancelClick={this.cancelClick}
-                                currencyid={this.state.currencyid}
-                                currencies={this.state.currencies}
-                                amount={this.state.amount}
-                   />
-           )
-       }
-   }
+    private cancelClick(event: any) {
+        console.log("cancel clicked");
+        store.dispatch(cancelEdit());
+    }
+}
 
-let TransferForm = (props:any) => {
+let TransferForm = (props: any) => {
     const {error, handleSubmit, cancelClick, currencyid, currencies, amount} = props;
     console.log(props);
     console.log(props.currencyid);
@@ -187,7 +185,7 @@ let TransferForm = (props:any) => {
                 <table>
                     <tbody>
                     <tr>
-                        <td style={{color: "red",maxWidth: "20em"}} colSpan={2}>
+                        <td style={{color: "red", maxWidth: "20em"}} colSpan={2}>
                             {error && <strong>{error}</strong>}
                         </td>
                     </tr>
@@ -199,7 +197,7 @@ let TransferForm = (props:any) => {
                             <Field
                                 name="currencyid"
                                 component="select"
-                                 style={{width: "100%"}}
+                                style={{width: "100%"}}
                                 value={currencyid}
                             >
                                 {currencies.map((c: ICurrency) => (
@@ -247,7 +245,7 @@ let TransferForm = (props:any) => {
                                         onClick={handleSubmit((values: any) =>
                                             props.onSubmit({
                                                 ...values,
-                                                btnClicked: 'send'
+                                                btnClicked: "send"
                                             }))}
                                 >
                                     Send
@@ -256,7 +254,7 @@ let TransferForm = (props:any) => {
                                         onClick={handleSubmit((values: any) =>
                                             props.onSubmit({
                                                 ...values,
-                                                btnClicked: 'receive'
+                                                btnClicked: "receive"
                                             }))}
                                 >
                                     Receive
@@ -268,9 +266,7 @@ let TransferForm = (props:any) => {
                 </table>
             </form>
         </div>
-    )
-}
-
-
+    );
+};
 
 export default Transfer;

@@ -11,14 +11,14 @@ import {
 } from "./Constants";
 
 //redux actions
-export function editBuy(step:number){
+export function editBuy(step: number){
     const action = {
         type: (step == 1? EDIT_BUY : EDIT_BUY_STEP2)
     }
     return action;
 }
 
-export function editSell(step:number){
+export function editSell(step: number){
     const action = {
         type: (step == 1? EDIT_SELL : EDIT_SELL_STEP2)
     }
