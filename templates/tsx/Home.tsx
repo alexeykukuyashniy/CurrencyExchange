@@ -201,8 +201,7 @@ class Home extends React.Component<{}, {rates: constants.IRate[]|undefined, rate
         console.log("Home handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         if (StoreUtils.getStoreState() === constants.SAVE_EDIT) {
             this.fetchData();
-        } else if (StoreUtils.getStoreState() === constants.VIEW_HOME ||
-                   StoreUtils.getStoreState() === constants.SETTINGS_UPDATED) {
+        } else if (StoreUtils.getStoreState() === constants.VIEW_HOME) {
             this.getSetting();
             this.forceUpdate();
         }
