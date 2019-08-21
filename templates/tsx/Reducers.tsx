@@ -24,7 +24,7 @@ export function homeReducer(state: IStoreState = {state: VIEW_HOME, data: undefi
     }
 
     let stateName: string = action.type;
-    if (action.type === CANCEL_EDIT /*|| action.type == SAVE_EDIT*/) {
+    if (action.type === CANCEL_EDIT) {
         stateName = VIEW_HOME;
     } else if (action.type === RATE_UPDATED) {
         // don"t change state name on rate update - just add data

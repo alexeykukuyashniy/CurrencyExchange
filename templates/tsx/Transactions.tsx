@@ -7,7 +7,7 @@ import "primeicons/primeicons.css";
 import {Dropdown} from "primereact/dropdown";
 import {Calendar} from "primereact/calendar";
 import store, {StoreUtils} from "./Store";
-import {cancelEdit} from "./Actions";
+import {view} from "./Actions";
 
 interface ICurrency {
     currencyid: string;
@@ -55,7 +55,7 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
             dateTo: undefined,
             transactionTypeMode: transactionTypeFilterData[0]
         };
-        store.dispatch(cancelEdit()); // in case edit form is active
+        store.dispatch(view()); // in case edit form is active
         this.fetchCurrency();
     }
 

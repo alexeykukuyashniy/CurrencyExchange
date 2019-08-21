@@ -17,7 +17,7 @@ interface ITransferState {
     amount: number;
     currencies: ICurrency[]|undefined;
     currencyid: number;
-    person: string;
+   // person: string;
 }
 
 interface ICurrency {
@@ -52,7 +52,7 @@ class Transfer extends React.Component<ITransferProps, ITransferState> {
             amount: props.amount,
             currencies: undefined,
             currencyid: props.currencyid,
-            person: "",
+           // person: "",
         };
         console.log("initial state:", this.state);
         this.fetchCurrency();
@@ -140,11 +140,15 @@ class Transfer extends React.Component<ITransferProps, ITransferState> {
 
             let amountRest: number = 0;
             for (const c of currencies) {
-                if (c.currencyid === currencyid) {
+                // tslint:disable-next-line
+                if (c.currencyid == currencyid) { // cannot use "===" since typeof(currencyid) = string
                     amountRest = c.amountrest as number;
                     break;
                 }
             }
+
+            console.log("found amount rest:", amountRest);
+
             if (this.formData.amount - amountRest > 0) {
                 errors = errors + "Amount should not be greater than " + amountRest + ".";
             }

@@ -1,14 +1,14 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom'
-import {BrowserRouter as Router, Route, NavLink} from 'react-router-dom';
-import Home from './Home';
-import Transactions from './Transactions';
-import Admin from './Admin';
-import RateService from './RateService';
-import {Provider} from 'react-redux'
-import store, {StoreUtils} from './Store';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import {BrowserRouter as Router, Route, NavLink} from "react-router-dom";
+import Home from "./Home";
+import Transactions from "./Transactions";
+import Admin from "./Admin";
+import RateService from "./RateService";
+import {Provider} from "react-redux";
+import store, {StoreUtils} from "./Store";
 import CELogin from "./Login";
-import { Redirect } from 'react-router';
+import { Redirect } from "react-router";
 import CESubHeader from "./SubHeader";
 
 interface IHeaderData {
@@ -17,14 +17,14 @@ interface IHeaderData {
     date: string;
 }
 
-function isLoginPage(){
-    return window.location.href.indexOf('login') > 0;
+function isLoginPage() {
+    return window.location.href.indexOf("login") > 0;
 }
 
 // main application component - container of all others
-class CEHeader extends React.Component<{},{}> {
+class CEHeader extends React.Component<{}, {}> {
 
-    unsubscribe: any;
+    private unsubscribe: any;
 
     constructor(props: any) {
         super(props);
@@ -34,50 +34,12 @@ class CEHeader extends React.Component<{},{}> {
         this.unsubscribe = store.subscribe(this.handleStateChange);
     }
 
-    componentWillUnmount(): void {
-        this.unsubscribe();
-    }
-
-    fetchData() {
-        if (!StoreUtils.isLoggedIn())
-            return;
-
-        let that = this;
-
-        fetch('./headerdata', StoreUtils.authHeader()
-        ).then(function (response) {
-            if (response.ok) {
-                console.log(response);
-                let data = response.json();
-                data.then(data => {
-                    let d = (data as IHeaderData[])[0];
-                    console.log('header data: ', data, d.amount, d.date, d.value);
-                    let usdCashLocal: number = parseFloat(d.amount.replace(",", ""));
-
-                    that.setState({
-                        usdCash: usdCashLocal, usdCashStr: d.amount,
-                        rateDate: d.date, minimalCurrencyRest: d.value as unknown as number
-                    });
-                })
-            }
-        })
-    }
-
-    handleStateChange() {
-        console.log('Header handleStateChange: ', StoreUtils.getStoreState(), store.getState());
-
-        if (isLoginPage() && StoreUtils.isLoggedIn()) {
-            console.log('forceUpdate');
-            this.fetchData();
-        }
-    }
-
-    render() {
-        let isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
+    public render() {
+        const isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
 
         if (!isLoginPage() && !StoreUtils.isLoggedIn()) {
-            window.location.href = '/login'; // redirect to login page
-        } else
+            window.location.href = "/login"; // redirect to login page
+        } else {
             return <>
                 <img id="imgLogo" src="./static/images/logo.png" alt="Logo" style={{display: isVisible}}/>
                 <div id="dvTitle" style={{display: isVisible}}>
@@ -85,7 +47,6 @@ class CEHeader extends React.Component<{},{}> {
                         Airport Currency Exchange Office
                     </h2>
                 </div>
-
                 <Router>
                     <div id="dvLinks" style={{display: isVisible}}>
                         <ul>
@@ -108,9 +69,9 @@ class CEHeader extends React.Component<{},{}> {
                         {!isLoginPage() && !StoreUtils.isLoggedIn() ?
                             <Redirect to="/login"/> : ""
                         }
-                        <Route path='/' component={Home}/>
-                        <Route path='/trans' component={Transactions}/>
-                        <Route path='/admin' component={Admin}/>
+                        <Route path="/" component={Home}/>
+                        <Route path="/trans" component={Transactions}/>
+                        <Route path="/admin" component={Admin}/>
                     </div>
                 </Router>
                 {isLoginPage() && !StoreUtils.isLoggedIn() ?
@@ -119,13 +80,54 @@ class CEHeader extends React.Component<{},{}> {
                 {StoreUtils.isLoggedIn() ?
                     <RateService isGetRealData={false}/> : ""
                 }
-            </>
+            </>;
+        }
+    }
+
+    public componentWillUnmount(): void {
+        this.unsubscribe();
+    }
+
+    private fetchData() {
+        if (!StoreUtils.isLoggedIn()) {
+            return;
+        }
+
+        const that = this;
+
+        fetch("./headerdata", StoreUtils.authHeader()).then((response) => {
+            if (response.ok) {
+                console.log(response);
+                const data = response.json();
+                data.then((dt) => {
+                    const d = (dt as IHeaderData[])[0];
+                    console.log("header data: ", dt, d.amount, d.date, d.value);
+                    const usdCashLocal: number = parseFloat(d.amount.replace(",", ""));
+
+                    that.setState({
+                        minimalCurrencyRest: d.value as unknown as number,
+                        rateDate: d.date,
+                        usdCash: usdCashLocal,
+                        usdCashStr: d.amount
+                    });
+                });
+            }
+        });
+    }
+
+    private handleStateChange() {
+        console.log("Header handleStateChange: ", StoreUtils.getStoreState(), store.getState());
+
+        if (isLoginPage() && StoreUtils.isLoggedIn()) {
+            console.log("forceUpdate");
+            this.fetchData();
+        }
     }
 }
 
-    ReactDOM.render(
-        <Provider store={store}>
-            <CEHeader/>
-        </Provider>,
-        document.getElementById('header')
-    );
+ReactDOM.render(
+    <Provider store={store}>
+        <CEHeader/>
+    </Provider>,
+    document.getElementById("header")
+);
