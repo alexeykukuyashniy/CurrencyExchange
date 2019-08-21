@@ -10,7 +10,7 @@ import store, {StoreUtils} from "./Store";
 import {view} from "./Actions";
 
 interface ICurrency {
-    currencyid: string;
+    currencyid: number;
     code: string;
 }
 
@@ -91,20 +91,21 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
             }
         }
 
+        const anyCurrency: number = 0;
         const dataTable = this.state.data && this.state.data.length > 0 ?
             <div id="dvTransactions">
                 <DataTable value={this.state.data} sortMode="multiple" scrollable={true} scrollHeight="200px">
                     <Column field="date" header="Date/Time" sortable={true} style={{width: "12em"}}/>
                     <Column field="code" header="Currency" sortable={true} style={{textAlign: "center", width: "8em"}}/>
                     <Column field="amount" header="Amount" sortable={true} style={{textAlign: "right", width: "7em"}}
-                            footer={this.state.currency && this.state.currency.currencyid !== "0" ?
+                            footer={this.state.currency && this.state.currency.currencyid !== anyCurrency ?
                                 sumAmount.toFixed(2) : ""}
                             footerStyle={{textAlign: "right"}}/>
                     <Column field="transactiontype" header="Type" sortable={true}
                             style={{textAlign: "right", width: "5em"}}/>
                     <Column field="commission" header="Commission" sortable={true}
                             style={{textAlign: "right", width: "10em"}}
-                            footer={this.state.currency && this.state.currency.currencyid !== "0" ?
+                            footer={this.state.currency && this.state.currency.currencyid !== anyCurrency ?
                                 sumCommission.toFixed(2) : ""}
                             footerStyle={{textAlign: "right"}}/>
                     <Column field="rate" header="Exchange&nbsp;Rate" sortable={true}

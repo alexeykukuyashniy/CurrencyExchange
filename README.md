@@ -68,8 +68,12 @@ Date/time exchange rates last received by the service will be immediately update
 
 #### Technical Info.
 
-Database: PostgreSQL. 
+Database: PostgreSQL.
+
 Back End: base language - Python. Flask, SQLAlchemy, JWT authentication.
+
 Front End: base language TypeScript. React, Redux, Redux-Form.
+
 Note. Hooks not used since they are applicable to the functional components only while class components used in the application.
+
 
