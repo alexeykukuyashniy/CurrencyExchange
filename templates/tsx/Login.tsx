@@ -1,9 +1,9 @@
-import * as React from 'react';
-import axios from 'axios';
+import * as React from "react";
+import axios from "axios";
 import store from "./Store";
 import {setToken} from "./Actions";
 
-class CELogin extends React.Component<{},{user:string,pwd:string, status:string}> {
+class CELogin extends React.Component<{}, {user: string, pwd: string, status: string}> {
 
     constructor(props: any) {
         super(props);
@@ -12,51 +12,13 @@ class CELogin extends React.Component<{},{user:string,pwd:string, status:string}
         this.handleInputChange = this.handleInputChange.bind(this);
 
         this.state = {
-            user: "",
             pwd: "",
-            status: ""
+            status: "",
+            user: ""
         };
     }
 
-    isDataValid() {
-        console.log('validating:', this.state);
-
-        return this.state.user.length > 0 &&
-            this.state.pwd.length > 0;
-    }
-
-    handleInputChange(event: any) {
-        let name: string = event.target.attributes.getNamedItem("name").value;
-        let val: string = event.target.value;
-        if (name == 'user') {
-            this.setState({user: val});
-        } else {
-            this.setState({pwd: val});
-        }
-    }
-
-    login(event: any) {
-        let that = this;
-        let data = {
-            'user': this.state.user,
-            'pwd': this.state.pwd
-        };
-        axios.post('/doLogin', data)
-            .then(function (response) {
-                console.log('response: ', response);
-                if (response.data == "Incorrect password") {
-                    that.setState({status: response.data});
-                } else {
-                    that.setState({status: ""});
-                    store.dispatch(setToken(response.data));
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
-    render() {
+    public render() {
         return (<div id="dvLogin">
                 <form method="POST">
                     <table>
@@ -81,7 +43,7 @@ class CELogin extends React.Component<{},{user:string,pwd:string, status:string}
                             </td>
                             <td>
                                 <input
-                                    name='user'
+                                    name="user"
                                     type="text"
                                     value={this.state.user}
                                     onChange={this.handleInputChange}
@@ -94,7 +56,7 @@ class CELogin extends React.Component<{},{user:string,pwd:string, status:string}
                             </td>
                             <td>
                                 <input
-                                    name='pwd'
+                                    name="pwd"
                                     type="text"
                                     value={this.state.pwd}
                                     onChange={this.handleInputChange}
@@ -102,7 +64,7 @@ class CELogin extends React.Component<{},{user:string,pwd:string, status:string}
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={2} style={{textAlign:"right"}}>
+                            <td colSpan={2} style={{textAlign: "right"}}>
                                 <input type="button" onClick={this.login} value="Login" disabled={!this.isDataValid()}/>
                             </td>
                         </tr>
@@ -110,7 +72,41 @@ class CELogin extends React.Component<{},{user:string,pwd:string, status:string}
                     </table>
                 </form>
             </div>
-        )
+        );
+    }
+
+    private isDataValid() {
+        return this.state.user.length > 0 &&
+               this.state.pwd.length > 0;
+    }
+
+    private handleInputChange(event: any) {
+        const name: string = event.target.attributes.getNamedItem("name").value;
+        const val: string = event.target.value;
+        if (name === "user") {
+            this.setState({user: val});
+        } else {
+            this.setState({pwd: val});
+        }
+    }
+
+    private login(event: any) {
+        const that = this;
+        const data = {
+            pwd: this.state.pwd,
+            user: this.state.user
+        };
+        axios.post("/doLogin", data).then((response) => {
+                console.log("response: ", response);
+                if (response.data === "Incorrect password") {
+                    that.setState({status: response.data});
+                } else {
+                    that.setState({status: ""});
+                    store.dispatch(setToken(response.data));
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
     }
 }
 

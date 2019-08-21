@@ -1,16 +1,16 @@
-import { reducer as reduxFormReducer } from 'redux-form';
-import { combineReducers, createStore } from 'redux';
-import {homeReducer, securityReducer} from './Reducers';
+import { reducer as reduxFormReducer } from "redux-form";
+import { combineReducers, createStore } from "redux";
+import {homeReducer, securityReducer} from "./Reducers";
 import {IStoreState} from "./Constants";
 
-let reducers = combineReducers({
+const reducers = combineReducers({
     form: reduxFormReducer,
     main: homeReducer,
     security: securityReducer
 });
 
-const store = createStore(
-    reducers,{}, undefined
+const store = createStore (
+    reducers, {}, undefined
 );
 
 // utilities class
@@ -23,15 +23,15 @@ export class StoreUtils {
 
     // returns true if user logged in
     public static isLoggedIn() {
-        return store.getState().security.token != undefined;
-    };
+        return store.getState().security.token !== undefined;
+    }
 
     // return authorization header with jwt token
     public static authHeader() {
         if (StoreUtils.isLoggedIn()) {
-            let st = store.getState().security;
-            let token: string = (st != undefined && st.token != undefined ? st.token.toString() : "");
-            return {headers: {'Authorization': 'Bearer ' + token}};
+            const st = store.getState().security;
+            const token: string = (st !== undefined && st.token !== undefined ? st.token.toString() : "");
+            return {headers: {Authorization: "Bearer " + token}};
         } else {
             return {};
         }

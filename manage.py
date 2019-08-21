@@ -42,7 +42,7 @@ def getCashAmount():
 def headerdata():
     s = text("select cast(s.value as varchar) as value, "
              "to_char(c.amount,'999,999.99') amount, "
-             "to_char(max(date),'yyyy-MM-dd hh:mi:ss') date "
+             "to_char(max(date),'yyyy-MM-dd HH24:mi:ss') date "
              "from setting s, rate r, cash c "
              "join currency cur on c.currencyid = cur.currencyid "
              "where cur.code = 'USD' and s.name=:name "
