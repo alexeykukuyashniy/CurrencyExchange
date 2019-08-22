@@ -125,10 +125,12 @@ def saveRates():
         updRate(rate["currencyid"], rate["buyrate"], rate["sellrate"], rate["date"])
     return 'OK'
 
+#saves one updated setting to the database
 def updSetting(name, value):
      s = text("update setting set value=:value where name=:name")
      conn.execute(s,name=name, value=value)
 
+#saves updated settings to the database
 @app.route("/savesettings", methods=['POST'])
 @jwt_required
 def saveSettings():
@@ -280,6 +282,7 @@ def cash():
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
 
+# provides response to the "/login" url
 @app.route("/login", methods=['GET'])
 def login():
     return render_template("home.html")
