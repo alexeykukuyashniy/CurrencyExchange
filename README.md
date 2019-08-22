@@ -63,6 +63,8 @@ If the setting is set to 0 then service will stop its work.
 
 Date/time when exchange rates last received by the service will be immediately updated on the Home/Transactions/Admin page header.
 
+Accessibility: user can iterate not only with mouse but with keyboard also using Tab, Shift-Tab buttons to cicle through pages controls (links, buttons) and Enter to press buttons.
+
 Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
 
 
