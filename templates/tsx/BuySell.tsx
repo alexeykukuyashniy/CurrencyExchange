@@ -316,8 +316,12 @@ let BuySellForm = (props: any) => {
 
     return (<div id="dvData2">
             <form onSubmit={handleSubmit}>
+                <div id="dvClose">
+                    <img id="imgClose" src="./static/images/close.gif" alt="Close" onClick={props.cancelClick}  />
+                </div>
                 <table>
                     <tbody>
+                    <tr id="trClose" />
                     <tr>
                         <td style={{color: "red", maxWidth: "20em"}} colSpan={2}>
                             {error && <strong>{error}</strong>}

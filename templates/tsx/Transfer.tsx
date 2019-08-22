@@ -183,9 +183,12 @@ let TransferForm = (props: any) => {
     console.log(props.amount);
     console.log("store state: ", StoreUtils.getStoreState());
 
-    return (<div id="dvData">
+    return (<div id="dvData2">
             <form onSubmit={handleSubmit}>
-                <h6 style={{textAlign: "center"}}>Send/Receive Cash</h6>
+                <div id="dvClose">
+                    <img id="imgClose" src="./static/images/close.gif" alt="Close" onClick={props.cancelClick}/>
+                </div>
+                <h6 id="hTransfer" style={{textAlign: "center"}}>Send/Receive Cash</h6>
                 <table>
                     <tbody>
                     <tr>

@@ -120,3 +120,17 @@ a.selected {
   display: table;
   margin: 17% auto;
 }
+
+#dvClose {
+  float:right;
+  padding-right:3px;
+  margin-top:-2px;
+}
+
+#trClose {
+  height:16px;
+}
+
+#hTransfer{
+ padding-top:16px;
+}
