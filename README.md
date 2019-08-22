@@ -70,6 +70,7 @@ Note: when user manually refreshes page in browser - application will redirect t
 
 Database: PostgreSQL.  
 Back End: base language - Python. Flask, SQLAlchemy, JWT authentication.  
-Front End: base language TypeScript. React, Redux, Redux-Form.
+Front End: base language TypeScript. React, Redux, Redux-Form, PrimeReact, ReactStrap.
+Build: Webpack with TSLint included.
 
 Note. Hooks not used since they are applicable to the functional components only while class components used in the application.
