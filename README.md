@@ -39,9 +39,8 @@ Person is required field. If person is not populated - "Person is required." err
 The appropriate currency amount will be removed/added from/to cash when transfer submitted and grid on the home page along with USD amount rest in the header will be 
 refreshed to reflect the updated rest amounts in the office cash.
 
-On the Transactions page user can filter transactions data by currency/period/type of operation.  
-If one currency selected in the data filter then totals will be shown in the grid footer.
-
+On the Transactions page user can filter transactions by currency/period/type of operation.  
+If one currency selected in the data filter then totals will be shown in the grid footer.  
 The "Transaction Type" filter value "Debit" selects "sell" and "send" transactions, "Credit" - "buy" and "receive" ones.
 
 On the Admin page user can manage settings:
@@ -55,16 +54,16 @@ Allowed min/max values shown also for each setting. The Update button becomes en
 
 Also "MinimalCurrencyRest" setting exists which is not shown on the Admin page and set to 1000.
 
-Rates updated service exists in the application that updates exchange rates on a reqular basis - defined in the "Refresh currency exchange rates period" setting. 
+"Rates update service" exists in the application that updates exchange rates on a reqular basis - defined in the "Refresh currency exchange rates period, sec" setting. 
 Buy/sell exchange rates calucalted as following:  
 Buy rate = received rate * (100 - "Buy/Sell rate margin" / 2)  
 Sell rate = received rate * (100 + "Buy/Sell rate margin" / 2)
 
 If the setting is set to 0 then service will stop its work.
 
-Date/time exchange rates last received by the service will be immediately updated on the Home/Transactions/Admin page header.
+Date/time when exchange rates last received by the service will be immediately updated on the Home/Transactions/Admin page header.
 
-**Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
+Note: when user manually refreshes page in browser - application will redirect to the Login page since the front end stored authorization info will be lost.
 
 
 #### Technical Info.
