@@ -6,6 +6,7 @@ from sqlalchemy.sql import text
 from datetime import datetime
 import json
 import constants
+from typing import Dict
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -26,7 +27,7 @@ jwt = JWTManager(app)
 @app.route("/cashamount")
 @jwt_required
 def getCashAmount():
-    code = request.args.get("code")
+    code: str = request.args.get("code")
     s = text("select to_char(c.amount,'999,999.99') amount "
              "from cash c "
              "join currency cur on c.currencyid = cur.currencyid "
@@ -97,18 +98,18 @@ def trans():
 @app.route("/transaction", methods=['POST'])
 @jwt_required
 def transaction():
-
-    data = json.loads(request.data)
-    amount = data[constants.TR_AMOUNT]
-    rate = data[constants.TR_RATE]
-    transactiontype = data[constants.TR_TRANSACTION_TYPE]
-    currencyid = data[constants.TR_CURRENCY_ID]
-    commission = data[constants.TR_COMMISSION]
-    note = data[constants.TR_NOTE]
-    user = get_jwt_identity() #"test user" # TODO
+    data: str = json.loads(request.data)
+    amount: str = data[constants.TR_AMOUNT]
+    rate: str = data[constants.TR_RATE]
+    transactiontype: str = data[constants.TR_TRANSACTION_TYPE]
+    currencyid: str = data[constants.TR_CURRENCY_ID]
+    commission: str = data[constants.TR_COMMISSION]
+    note: str = data[constants.TR_NOTE]
+    user: str = get_jwt_identity()
     s = text("insert into transactions(transactiontypeid, currencyid, amount, date, rate, commission, note, username)"
              "values(:transactiontype, :currencyid, :amount, now(), :rate, :commission, :note, :user)")
-    conn.execute(s,amount=amount, rate=rate, transactiontype=transactiontype, currencyid=currencyid, commission=commission, note=note, user=user)
+    conn.execute(s, amount=amount, rate=rate, transactiontype=transactiontype, currencyid=currencyid,
+                 commission=commission, note=note, user=user)
     return 'OK'
 
 # updates exchange rate data for the given currency
@@ -165,8 +166,7 @@ def setting():
 @app.route("/settings", methods=['GET'])
 @jwt_required
 def settings():
-    print('decoded: ', get_jwt_identity())
-    s = text("""select name, 
+    s = text("""select name,
                        cast(case when name ='RefreshPeriod' then cast(value as int) else value end as varchar) as value 
                   from setting 
                  where name in ('Commission', 'RefreshPeriod', 'Surcharge', 'MinimalCommission', 'BuySellRateMargin')"""
@@ -179,10 +179,10 @@ def settings():
 @app.route("/transactions", methods=['GET'])
 @jwt_required
 def transactions():
-    currencyid = request.args.get("currencyid")
-    sDateFrom = request.args.get("dateFrom")
-    sDateTo = request.args.get("dateTo")
-    transactionTypeMode = request.args.get("transactionTypeMode")
+    currencyid: str = request.args.get("currencyid")
+    sDateFrom: str = request.args.get("dateFrom")
+    sDateTo: str = request.args.get("dateTo")
+    transactionTypeMode: str = request.args.get("transactionTypeMode")
 
     print("currency:", currencyid, sDateFrom, sDateTo, sDateFrom[:24].strip())
 
@@ -226,8 +226,8 @@ def transactions():
                             or :transactionTypeMode = 4 /* Send/Receive */ and t.transactiontypeid in (3, 4)
                             or :transactionTypeMode = 5 /* Send */ and t.transactiontypeid = 3
                             or :transactionTypeMode = 6 /* Receive */ and t.transactiontypeid = 4
-                            or :transactionTypeMode = 7 /* Debit */ and t.transactiontypeid in (2, 3) /* sell / send */
-                            or :transactionTypeMode = 8 /* Credit */ and t.transactiontypeid in  (1, 4) /* buy/receive */
+                            or :transactionTypeMode = 7 /* Debit */ and t.transactiontypeid in (2, 3) /*sell/send*/
+                            or :transactionTypeMode = 8 /* Credit */ and t.transactiontypeid in  (1, 4) /*buy/receive*/
                        )
                        order by t.date desc"""
          )
@@ -273,7 +273,7 @@ def currencies():
 @app.route("/cash", methods=['GET'])
 @jwt_required
 def cash():
-    currencyid = request.args.get("currencyid")
+    currencyid: int = request.args.get("currencyid")
     s = text("""select cast(t.amount as varchar) amount
                   from cash t
                  where t.currencyid = :currencyid"""
@@ -291,12 +291,12 @@ def login():
 @app.route("/doLogin", methods=['POST'])
 def doLogin():
     data = json.loads(request.data)
-    user = data["user"]
-    pwd = data["pwd"]
+    user: str = data["user"]
+    pwd: str = data["pwd"]
 
     if (pwd == "1"):
-        payload = { "user": user }
-        token = create_access_token(identity = user)
+        payload: Dict[str, str] = { "user": user }
+        token: str = create_access_token(identity = user)
         return token
     else:
         return "Incorrect password" # password hardcoded to 1, user name can be any
