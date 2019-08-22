@@ -161,7 +161,8 @@ class Home extends React.Component<{}, {rates: constants.IRate[]|undefined, rate
     private isViewMode() {
         const st = StoreUtils.getStoreState();
         return (st !== constants.EDIT_BUY && st !== constants.EDIT_BUY_STEP2 &&
-                st !== constants.EDIT_SELL && st !== constants.EDIT_SELL_STEP2
+                st !== constants.EDIT_SELL && st !== constants.EDIT_SELL_STEP2 &&
+                st !== constants.EDIT_TRANSFER
                );
     }
 
