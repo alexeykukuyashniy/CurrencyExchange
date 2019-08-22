@@ -121,6 +121,10 @@ a.selected {
   margin: 17% auto;
 }
 
+#imgClose{
+  cursor: pointer;
+}
+
 #dvClose {
   float:right;
   padding-right:3px;
