@@ -1,23 +1,23 @@
 import * as React from "react";
-import "primereact/resources/themes/nova-light/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import { SubmissionError } from "redux-form";
-import { Field, reduxForm } from "redux-form";
-import * as constants from "./Constants";
+import { Field, reduxForm, SubmissionError } from "redux-form";
+import {
+    BUY_SELL_RATE_MARGIN,
+    COMMISSION,
+    EDIT_BUY,
+    EDIT_BUY_STEP2,
+    EDIT_SELL,
+    EDIT_SELL_STEP2,
+    MINIMAL_COMMISSION,
+    SURCHARGE,
+    TR_TRANSACTION_TYPES,
+    IRate
+} from "./Constants";
 import store, {StoreUtils} from "./Store";
 import {cancelEdit, editBuy, editSell, saveEdit} from "./Actions";
 import axios from "axios";
 
 interface IFormData {
     amount: number;
-}
-
-interface ISettings {
-    commission: number;
-    surcharge: number;
-    minimalCommission: number;
-    buySellRateMargin: number;
 }
 
 interface ISetting {
@@ -43,6 +43,13 @@ interface IBuySellState {
     commissionamount: number;
     settings: ISettings;
     step: number|undefined; // needed to refresh the form on back/next button click
+}
+
+interface ISettings {
+    commission: number;
+    surcharge: number;
+    minimalCommission: number;
+    buySellRateMargin: number;
 }
 
 // currency buy/sell edit form
@@ -102,7 +109,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 
     private getAmountRest(code: string) {
         const that = this;
-        fetch("./cashamount?code=" + (this.isSell() ? code : "USD"), StoreUtils.authHeader())
+        fetch("./cashamount?code=" + (StoreUtils.isSell() ? code : "USD"), StoreUtils.authHeader())
             .then((response) => {
                 if (response.ok) {
                     const data = response.json();
@@ -120,8 +127,8 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         console.log("BS handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         console.log(store.getState().main);
 
-        if (StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ||
-            StoreUtils.getStoreState() === constants.EDIT_SELL_STEP2) {
+        if (StoreUtils.getStoreState() === EDIT_BUY_STEP2 ||
+            StoreUtils.getStoreState() === EDIT_SELL_STEP2) {
             return;
         }
 
@@ -131,7 +138,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             return;
         }
 
-        const rates = store.getState().main.data.data as constants.IRate[];
+        const rates = store.getState().main.data.data as IRate[];
         if (rates === undefined) {
             console.log("no data. exiting 2");
             return;
@@ -142,8 +149,8 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         for (const r of rates) {
 
             if (currencyid === r.currencyid) {
-                rate = (StoreUtils.getStoreState() === constants.EDIT_BUY ||
-                StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ? r.buyrate : r.sellrate);
+                rate = (StoreUtils.getStoreState() === EDIT_BUY ||
+                StoreUtils.getStoreState() === EDIT_BUY_STEP2 ? r.buyrate : r.sellrate);
             }
         }
 
@@ -170,16 +177,16 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
                         console.log(s);
 
                         switch (s.name) {
-                            case constants.COMMISSION:
+                            case COMMISSION:
                                 commission = s.value as unknown as number;
                                 break;
-                            case constants.SURCHARGE:
+                            case SURCHARGE:
                                 surcharge = s.value as unknown as number;
                                 break;
-                            case constants.MINIMAL_COMMISSION:
+                            case MINIMAL_COMMISSION:
                                 minimalCommission = s.value as unknown as number;
                                 break;
-                            case constants.BUY_SELL_RATE_MARGIN:
+                            case BUY_SELL_RATE_MARGIN:
                                 buySellRateMargin = s.value as unknown as number;
                                 break;
                         }
@@ -198,11 +205,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         });
     }
 
-    private isSell() {
-        return (StoreUtils.getStoreState() === constants.EDIT_SELL ||
-            StoreUtils.getStoreState() === constants.EDIT_SELL_STEP2);
-    }
-
     private validated(values: any) {
         let errors: string = "";
         console.log("validation:", this.state);
@@ -212,9 +214,9 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             errors = errors + "Amount should not be less than 10. \n";
         }
 
-        if (this.isSell() && this.formData.amount > this.state.amountRest) {
+        if (StoreUtils.isSell() && this.formData.amount > this.state.amountRest) {
             errors = errors + "Amount should not be greater than " + this.state.amountRest + ". \n";
-        } else if (!this.isSell() && this.state.subtotal > this.state.amountRest) {
+        } else if (!StoreUtils.isSell() && this.state.subtotal > this.state.amountRest) {
             const amount: number = Math.round(this.state.amountRest / this.state.rate * 100) / 100;
             errors = errors + "Amount should not be greater than " + amount + ". \n";
         }
@@ -228,27 +230,24 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 
     // change edit form step: 1 <-> 2
     private stepAction() {
-        const step = StoreUtils.getStoreState() === constants.EDIT_BUY ||
-        StoreUtils.getStoreState() === constants.EDIT_SELL ? 2 : 1;
-        return StoreUtils.getStoreState() === constants.EDIT_BUY ||
-        StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ?
-            editBuy(step) :
-            editSell(step);
+        const step = StoreUtils.getStoreState() === EDIT_BUY ||
+        StoreUtils.getStoreState() === EDIT_SELL ? 2 : 1;
+        return StoreUtils.isBuy() ? editBuy(step) : editSell(step);
     }
 
     private submit(values: any) {
         // print the form values to the console
         console.log("submit");
 
-        if ((StoreUtils.getStoreState() === constants.EDIT_BUY ||
-            StoreUtils.getStoreState() === constants.EDIT_SELL)) {
+        if ((StoreUtils.getStoreState() === EDIT_BUY ||
+            StoreUtils.getStoreState() === EDIT_SELL)) {
             store.dispatch(this.stepAction());
             console.log(store.getState());
             this.setState({step: 2});
         } else if (this.validated(values)) {
             console.log("saving...", this.state, values);
-            const op: number = (StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ?
-                constants.TR_TRANSACTION_TYPES.BUY : constants.TR_TRANSACTION_TYPES.SELL);
+            const op: number = (StoreUtils.getStoreState() === EDIT_BUY_STEP2 ?
+                TR_TRANSACTION_TYPES.BUY : TR_TRANSACTION_TYPES.SELL);
 
             console.log("params: ", op, ", ", this.state.amount, ", ", this.state.rate, ", ",
                 this.state.currencyid, ", ", this.state.commissionamount);
@@ -285,7 +284,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         const subtotal = this.state.rate !== undefined ?
             Math.round(this.state.amount * this.state.rate * 100.0) / 100.0 : 0;
         console.log("subtotal:", subtotal);
-        const total = Math.round((subtotal + (StoreUtils.getStoreState() === constants.EDIT_BUY ? -1 : 1) *
+        const total = Math.round((subtotal + (StoreUtils.getStoreState() === EDIT_BUY ? -1 : 1) *
             commissionamount) * 100) / 100;
         this.setState({commissionamount, subtotal, total});
     }
@@ -311,8 +310,7 @@ let BuySellForm = (props: any) => {
     // "step" - just passed inside to force form refresh
     const {error, handleSubmit, amountChange, cancelClick, backClick, currencycode, rate, amount, subtotal,
            commissionamount, total, step} = props;
-    const op: string = (StoreUtils.getStoreState() === constants.EDIT_BUY ||
-                        StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ? "Buy" : "Sell");
+    const op: string = (StoreUtils.isBuy() ? "Buy" : "Sell");
 
     return (<div id="dvData2">
             <form onSubmit={handleSubmit}>
@@ -343,8 +341,8 @@ let BuySellForm = (props: any) => {
                                 type="number"
                                 onChange={props.amountChange}
                                 value={props.amount}
-                                disabled={StoreUtils.getStoreState() === constants.EDIT_BUY_STEP2 ||
-                                          StoreUtils.getStoreState() === constants.EDIT_SELL_STEP2}
+                                disabled={StoreUtils.getStoreState() === EDIT_BUY_STEP2 ||
+                                          StoreUtils.getStoreState() === EDIT_SELL_STEP2}
                                 style={{textAlign: "right"}}
                             />
                         </td>
@@ -392,8 +390,8 @@ let BuySellForm = (props: any) => {
                                 <button type="button" onClick={props.cancelClick} style={{margin: "5px 5px"}}>Cancel
                                 </button>
                                 <button type="button" onClick={props.backClick} style={{margin: "5px 5px"}}
-                                        hidden={StoreUtils.getStoreState() !== constants.EDIT_BUY_STEP2 &&
-                                                StoreUtils.getStoreState() !== constants.EDIT_SELL_STEP2}>Back
+                                        hidden={StoreUtils.getStoreState() !== EDIT_BUY_STEP2 &&
+                                                StoreUtils.getStoreState() !== EDIT_SELL_STEP2}>Back
                                 </button>
                                 <button type="submit" style={{margin: "5px 5px"}}>{op}</button>
                             </div>

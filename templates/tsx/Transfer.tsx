@@ -4,10 +4,6 @@ import store, {StoreUtils} from "./Store";
 import {cancelEdit, saveEdit} from "./Actions";
 import axios from "axios";
 
-import "primereact/resources/themes/nova-light/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-
 interface ITransferProps {
     amount: number;
     currencyid: number;
@@ -17,7 +13,6 @@ interface ITransferState {
     amount: number;
     currencies: ICurrency[]|undefined;
     currencyid: number;
-   // person: string;
 }
 
 interface ICurrency {

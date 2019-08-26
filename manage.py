@@ -83,15 +83,13 @@ def homerates():
     jsonRates = json.dumps([dict(r) for r in rates])
     return jsonRates
 
-# provides response to the "/" and '/home' urls
-@app.route("/")
-@app.route("/home")
+# provides response to the "/", '/home', '/trans', '/admin', '/login' urls
+@app.route("/", methods=['GET'])
+@app.route("/home", methods=['GET'])
+@app.route("/trans", methods=['GET'])
+@app.route("/admin", methods=['GET'])
+@app.route("/login", methods=['GET'])
 def home():
-    return render_template("home.html")
-
-# provides response to the "/trans" url
-@app.route("/trans")
-def trans():
     return render_template("home.html")
 
 # saves new transaction data to the database
@@ -143,11 +141,6 @@ def saveSettings():
     updSetting(constants.MINIMAL_COMMISSION, data[constants.MINIMAL_COMMISSION])
     updSetting(constants.BUY_SELL_RATE_MARGIN, data[constants.BUY_SELL_RATE_MARGIN])
     return 'OK'
-
-# provides response to the "/admin" url
-@app.route("/admin", methods=['GET'])
-def admin():
-    return render_template("home.html")
 
 #returns particular setting value
 @app.route("/setting", methods=['GET'])
@@ -281,11 +274,6 @@ def cash():
     data = conn.execute(s, currencyid = currencyid).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
-
-# provides response to the "/login" url
-@app.route("/login", methods=['GET'])
-def login():
-    return render_template("home.html")
 
 # check password, if correct returns jwt access token, otherwise returns error message
 @app.route("/doLogin", methods=['POST'])

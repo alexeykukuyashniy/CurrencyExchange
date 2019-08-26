@@ -1,7 +1,7 @@
 import { reducer as reduxFormReducer } from "redux-form";
 import { combineReducers, createStore } from "redux";
 import {homeReducer, securityReducer} from "./Reducers";
-import {IStoreState} from "./Constants";
+import {EDIT_BUY, EDIT_BUY_STEP2, EDIT_SELL, EDIT_SELL_STEP2, IStoreState} from "./Constants";
 
 const reducers = combineReducers({
     form: reduxFormReducer,
@@ -35,6 +35,16 @@ export class StoreUtils {
         } else {
             return {};
         }
+    }
+
+    public static isBuy() {
+        return (StoreUtils.getStoreState() === EDIT_BUY ||
+                StoreUtils.getStoreState() === EDIT_BUY_STEP2);
+    }
+
+    public static isSell() {
+        return (StoreUtils.getStoreState() === EDIT_SELL ||
+                StoreUtils.getStoreState() === EDIT_SELL_STEP2);
     }
 }
 
