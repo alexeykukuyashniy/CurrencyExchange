@@ -5,8 +5,9 @@ from sqlalchemy.sql import select
 from sqlalchemy.sql import text
 from datetime import datetime
 import json
-import constants
 from typing import Dict
+import constants
+from models import Setting
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -112,7 +113,7 @@ def transaction():
 
 # updates exchange rate data for the given currency
 def updRate(currencyid, buyrate, sellrate, date):
-     s = text("update rate set buyrate=:buyrate,sellrate=:sellrate,date=:date where currencyid=:currencyid")
+     s = text("update rate set buyrate=:buyrate, sellrate=:sellrate, date=:date where currencyid=:currencyid")
      conn.execute(s, currencyid=currencyid, buyrate=buyrate, sellrate=sellrate, date=date)
 
 # saves currencies exchange rates to the database
@@ -126,8 +127,11 @@ def saveRates():
 
 #saves one updated setting to the database
 def updSetting(name, value):
-     s = text("update setting set value=:value where name=:name")
-     conn.execute(s,name=name, value=value)
+     s = Setting(name=name, value=value)
+     db_session.add(s)
+     db_session.commit()
+     #s = text("update setting set value=:value where name=:name")
+     #conn.execute(s,name=name, value=value)
 
 #saves updated settings to the database
 @app.route("/savesettings", methods=['POST'])
