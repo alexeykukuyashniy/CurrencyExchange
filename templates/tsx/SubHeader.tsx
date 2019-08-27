@@ -12,14 +12,14 @@ function isLoginPage() {
     return window.location.href.indexOf("login") > 0;
 }
 
-class CESubHeader extends React.Component<{}, {usdCash: number, usdCashStr: string, rateDate: string,
+class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string,
                                               minimalCurrencyRest: number}> {
 
     private unsubscribe: any;
 
     constructor(props: any) {
         super(props);
-        this.state = {usdCash: 0, usdCashStr: "", rateDate: "", minimalCurrencyRest: 0};
+        this.state = {usdCash: 0, rateDate: "", minimalCurrencyRest: 0};
         this.fetchData = this.fetchData.bind(this);
         this.handleStateChange = this.handleStateChange.bind(this);
         this.unsubscribe = store.subscribe(this.handleStateChange);
@@ -64,8 +64,7 @@ class CESubHeader extends React.Component<{}, {usdCash: number, usdCashStr: stri
                     that.setState({
                         minimalCurrencyRest: d.value as unknown as number,
                         rateDate: d.date,
-                        usdCash: usdCashLocal,
-                        usdCashStr: d.amount
+                        usdCash: usdCashLocal
                     });
                 });
             }
@@ -75,7 +74,7 @@ class CESubHeader extends React.Component<{}, {usdCash: number, usdCashStr: stri
     private handleStateChange() {
         console.log("SubHeader handleStateChange: ", StoreUtils.getStoreState(), store.getState());
 
-        if (!StoreUtils.isLoggedIn() /*|| StoreUtils.getStoreState() == constants.SETTINGS_UPDATED*/) {
+        if (!StoreUtils.isLoggedIn()) {
             return;
         }
 
