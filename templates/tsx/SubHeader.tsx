@@ -3,9 +3,10 @@ import store, {StoreUtils} from "./Store";
 import * as constants from "./Constants";
 
 interface IHeaderData {
-    value: string;
     amount: string;
     date: string;
+    mincurrencyrest: string;
+    refreshperiod: string;
 }
 
 function isLoginPage() {
@@ -13,13 +14,13 @@ function isLoginPage() {
 }
 
 class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string,
-                                              minimalCurrencyRest: number}> {
+                                              minimalCurrencyRest: number, refreshPeriod: number}> {
 
     private unsubscribe: any;
 
     constructor(props: any) {
         super(props);
-        this.state = {usdCash: 0, rateDate: "", minimalCurrencyRest: 0};
+        this.state = {minimalCurrencyRest: 0, rateDate: "", refreshPeriod: 0, usdCash: 0};
         this.fetchData = this.fetchData.bind(this);
         this.handleStateChange = this.handleStateChange.bind(this);
         this.unsubscribe = store.subscribe(this.handleStateChange);
@@ -30,11 +31,15 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
         if (!isLoginPage() && (this.state.rateDate === null || this.state.rateDate === undefined)) {
             return "Loading...";
         }
-
         const isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
         return (
             <div id="header2" style={{display: isVisible}}>
-              <span>Exchange Rates shown as per {this.state.rateDate}. You have <span
+              <span>Exchange Rates shown as per <span
+                  // tslint:disable-next-line
+                  style={{color: this.state.refreshPeriod == 0 ? "red" : "black"}}
+                  // tslint:disable-next-line
+                  title={this.state.refreshPeriod == 0 ? "Currency exchange rates outdated!" : ""}>
+                  {this.state.rateDate}</span>. You have <span
                   style={{color: this.state.usdCash <= this.state.minimalCurrencyRest ? "red" : "black"}}>
                   {this.state.usdCash}</span> USD left.</span>
             </div>
@@ -58,12 +63,13 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
                 const data = response.json();
                 data.then((dat) => {
                     const d = (dat as IHeaderData[])[0];
-                    console.log("subheader data: ", data, d.amount, d.date, d.value);
+                    console.log("subheader data: ", data, d.amount, d.date, d.mincurrencyrest, d.refreshperiod);
                     const usdCashLocal: number = parseFloat(d.amount.replace(",", ""));
 
                     that.setState({
-                        minimalCurrencyRest: d.value as unknown as number,
+                        minimalCurrencyRest: d.mincurrencyrest as unknown as number,
                         rateDate: d.date,
+                        refreshPeriod: d.refreshperiod as unknown as number,
                         usdCash: usdCashLocal
                     });
                 });
@@ -80,6 +86,7 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
 
         if (isLoginPage() && StoreUtils.isLoggedIn()) {
             this.fetchData();
+            return;
         }
 
         if (StoreUtils.getStoreState() === constants.SAVE_EDIT) {
@@ -88,6 +95,17 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
         }
 
         if (store.getState().main.data === undefined || store.getState().main.data.data === undefined) {
+            return;
+        }
+
+        if (StoreUtils.getStoreState() === constants.SETTINGS_UPDATED) {
+            const settings = store.getState().main.data.data as constants.ISettings;
+            if (settings !== undefined) {
+                const refreshPeriod: number = settings.refreshPeriod as unknown as number;
+                if (refreshPeriod !== this.state.refreshPeriod) {
+                    this.setState({refreshPeriod});
+                }
+            }
             return;
         }
 

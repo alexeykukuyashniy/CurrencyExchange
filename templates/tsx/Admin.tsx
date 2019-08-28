@@ -62,7 +62,7 @@ class Admin extends React.Component<{}, constants.ISettings> {
                         </tr>
                         <tr>
                             <td>
-                                Commission (0-3):
+                                Commission, % (0-3):
                             </td>
                             <td>
                                 <input
@@ -75,7 +75,7 @@ class Admin extends React.Component<{}, constants.ISettings> {
                         </tr>
                         <tr>
                             <td>
-                                Surcharge (0-3):
+                                Surcharge, USD (0-3):
                             </td>
                             <td>
                                 <input
@@ -88,7 +88,7 @@ class Admin extends React.Component<{}, constants.ISettings> {
                         </tr>
                         <tr>
                             <td>
-                                Minimal Commission(0-3):
+                                Minimal Commission, USD (0-3):
                             </td>
                             <td>
                                 <input
@@ -101,7 +101,7 @@ class Admin extends React.Component<{}, constants.ISettings> {
                         </tr>
                         <tr>
                             <td>
-                                Buy/Sell rate margin (0-2):
+                                Buy/Sell rate margin, % (0-2):
                             </td>
                             <td>
                                 <input

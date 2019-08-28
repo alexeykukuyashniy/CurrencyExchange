@@ -7,7 +7,6 @@ from datetime import datetime
 import json
 from typing import Dict
 import constants
-from models import Setting
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -15,7 +14,6 @@ from flask_jwt_extended import (
 )
 
 app = Flask(__name__)
-#engine = create_engine('postgresql://postgres:1@localhost:5432/CurrencyExchange')
 engine = create_engine('postgres://rmhakrfcehwgbt:f539dde57021225d1099a250471176d12a67aa8c10818795bbec9f4b79c66f72@ec2-184-72-221-140.compute-1.amazonaws.com:5432/d90qi8ks9tjo4u')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
@@ -42,15 +40,18 @@ def getCashAmount():
 @app.route("/headerdata")
 @jwt_required
 def headerdata():
-    s = text("select cast(s.value as varchar) as value, "
+    s = text("select cast(s.value as varchar) as minCurrencyRest, "
+             "cast(s2.value as varchar) as refreshPeriod, "
              "to_char(c.amount,'999,999.99') amount, "
              "to_char(max(date),'yyyy-MM-dd HH24:mi:ss') date "
              "from setting s, rate r, cash c "
-             "join currency cur on c.currencyid = cur.currencyid "
-             "where cur.code = 'USD' and s.name=:name "
-             "group by c.amount, s.value"
+             "join currency cur on c.currencyid = cur.currencyid, "
+             "setting s2 "
+             "where cur.code = 'USD' and s.name=:minCurrencyRest "
+             "and s2.name = :refreshPeriod "
+             "group by c.amount, s.value, s2.value"
             )
-    data = conn.execute(s, name=constants.MINIMAL_CURRENCY_REST).fetchall()
+    data = conn.execute(s, minCurrencyRest=constants.MINIMAL_CURRENCY_REST, refreshPeriod=constants.REFRESH_PERIOD).fetchall()
     jsonData = json.dumps([dict(d) for d in data])
     return jsonData
 
@@ -127,11 +128,8 @@ def saveRates():
 
 #saves one updated setting to the database
 def updSetting(name, value):
-     s = Setting(name=name, value=value)
-     db_session.add(s)
-     db_session.commit()
-     #s = text("update setting set value=:value where name=:name")
-     #conn.execute(s,name=name, value=value)
+     s = text("update setting set value=:value where name=:name")
+     conn.execute(s,name=name, value=value)
 
 #saves updated settings to the database
 @app.route("/savesettings", methods=['POST'])
@@ -201,16 +199,20 @@ def transactions():
             dateTo = datetime.strptime(sDateTo[:24].strip(), "%a %b %d %Y %H:%M:%S").replace(second=59).strftime("%Y%m%d %H:%M:%S")
     print(dateFrom, ' | ', dateTo)
 
-    s = text("""select to_char(t.date,'yyyy-MM-dd HH24:mi:ss') date,
+    s = text("""select to_char(t.date,'yyyy-MM-dd HH24:mi:ss') as date,
                        c.code,
-                       cast(t.amount as varchar) amount,
+                       cast(t.amount as varchar) as amount,
                        case when t.transactiontypeid = 1 then 'buy'
                        when t.transactiontypeid = 2 then 'sell'
                        when t.transactiontypeid = 3 then 'send'
                        when t.transactiontypeid = 4 then 'receive' end transactiontype,
-                       cast(t.commission as varchar) commission,
-                       cast(t.rate as varchar) rate,
-                       t.note,
+                       case when t.transactiontypeid in (1, 2) then cast(t.commission as varchar)
+                            else 'n/a' end as commission,
+                       case when t.transactiontypeid in (1, 2) then cast(t.rate as varchar)
+                            else 'n/a' end as rate,
+                       case when t.transactiontypeid = 3 then 'To '
+                            when t.transactiontypeid = 4 then 'From '
+                            else '' end || t.note as note,
                        t.username
                        from transactions t
                        join currency c on c.currencyid = t.currencyid
@@ -288,7 +290,7 @@ def doLogin():
 
     if (pwd == "1"):
         payload: Dict[str, str] = { "user": user }
-        token: str = create_access_token(identity = user)
+        token: str = create_access_token(identity = user, fresh = False, expires_delta = False)
         return token
     else:
         return "Incorrect password" # password hardcoded to 1, user name can be any

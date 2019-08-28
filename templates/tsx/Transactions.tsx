@@ -41,6 +41,8 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
 
     private loaded: boolean = false;
     private currencies: ICurrency[] = [];
+    // Calc Transactions grid body height depending on page height
+    private gridHeight: string = (window.innerHeight - 225) as unknown as string + "px";
 
     constructor(props: any) {
         super(props);
@@ -94,7 +96,7 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
         const anyCurrency: number = 0;
         const dataTable = this.state.data && this.state.data.length > 0 ?
             <div id="dvTransactions">
-                <DataTable value={this.state.data} sortMode="multiple" scrollable={true} scrollHeight="200px">
+                <DataTable value={this.state.data} sortMode="multiple" scrollable={true} scrollHeight={this.gridHeight}>
                     <Column field="date" header="Date/Time" sortable={true} style={{width: "12em"}}/>
                     <Column field="code" header="Currency" sortable={true} style={{textAlign: "center", width: "8em"}}/>
                     <Column field="amount" header="Amount" sortable={true} style={{textAlign: "right", width: "7em"}}

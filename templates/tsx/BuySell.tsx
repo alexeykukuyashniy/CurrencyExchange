@@ -147,8 +147,8 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         const currencyid = this.state.currencyid;
         let rate = 0;
         for (const r of rates) {
-
-            if (currencyid === r.currencyid) {
+            // tslint:disable-next-line
+            if (currencyid == r.currencyid) {
                 rate = (StoreUtils.getStoreState() === EDIT_BUY ||
                 StoreUtils.getStoreState() === EDIT_BUY_STEP2 ? r.buyrate : r.sellrate);
             }
