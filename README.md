@@ -76,3 +76,9 @@ Front End: base language TypeScript. React, Redux, Redux-Form, PrimeReact, React
 Build: Webpack with TSLint included.
 
 Note. Hooks not used since they are applicable to the functional components only while class components used in the application.
+
+
+### Testing
+
+Test plan is in Docs folder.
+Back end unit tests: backend_tests.py, to run execute run_backend_tests.cmd.
