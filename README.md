@@ -80,5 +80,5 @@ Note. Hooks not used since they are applicable to the functional components only
 
 ### Testing
 
-Test plan is in Docs folder.
-Back end unit tests: backend_tests.py, to run execute run_backend_tests.cmd.
+Test plan is in Docs folder - Test Plan.docx.  
+Back end unit tests: backend_tests.py, to run tests - execute run_backend_tests.cmd.
