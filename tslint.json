@@ -49,8 +49,5 @@
     "cyclomatic-complexity": false,
     "react-hooks-nesting": "error",
     "no-use-before-declare": false
-    },
-    "rulesDirectory": [
-      "node_modules/tslint-lines-between-class-members"
-    ]
+    }
 }
