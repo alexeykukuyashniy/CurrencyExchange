@@ -3,7 +3,7 @@ import axios from "axios";
 import store from "./Store";
 import {setToken} from "./Actions";
 
-class CELogin extends React.Component<{}, {user: string, pwd: string, status: string}> {
+export class CELogin extends React.Component<{}, {user: string, pwd: string, status: string}> {
 
     constructor(props: any) {
         super(props);
@@ -43,6 +43,7 @@ class CELogin extends React.Component<{}, {user: string, pwd: string, status: st
                             </td>
                             <td>
                                 <input
+                                    id="user"
                                     name="user"
                                     type="text"
                                     value={this.state.user}

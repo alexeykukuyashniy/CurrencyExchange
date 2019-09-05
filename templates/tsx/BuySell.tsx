@@ -404,6 +404,7 @@ let BuySellForm = (props: any) => {
     );
 };
 
+// @ts-ignore
 BuySellForm = reduxForm({
     form: "buySell",
     initialValues: {amount: 100}

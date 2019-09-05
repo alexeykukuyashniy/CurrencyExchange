@@ -61,6 +61,7 @@ class Transfer extends React.Component<ITransferProps, ITransferState> {
         console.log(this.props);
         console.log(this.state);
 
+        // @ts-ignore
         TransferForm = reduxForm({
             form: "Transfer",
             initialValues: {amount: 100, currencyid: this.state.currencyid, person: ""}

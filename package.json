@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "24.0.15",
     "@types/node": "12.6.6",
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
     "@types/react-widgets": "^4.3.3",
+    "@types/redux-form": "^8.1.5",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
+    "js-test": "0.0.1",
     "primeicons": "^2.0.0",
     "primereact": "^3.1.7",
     "react": "^16.8.6",
@@ -26,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject",
     "compile": "webpack --config webpack.config.js"
   },
@@ -49,15 +50,34 @@
     "@babel/core": "^7.5.4",
     "@babel/preset-env": "^7.5.4",
     "@babel/preset-react": "^7.0.0",
+    "@types/enzyme": "^3.10.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/jest": "^24.0.15",
+    "@types/react-test-renderer": "^16.8.3",
     "awesome-typescript-loader": "^5.2.1",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.3",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "html-loader": "^0.5.5",
+    "jest": "^24.7.1",
+    "jsdom": "15.1.1",
+    "jsdom-global": "3.0.2",
+    "react-test-renderer": "^16.8.6",
     "replace-url-html-webpack-plugin": "^1.0.5",
+    "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
     "tslint-webpack-plugin": "^2.1.0",
     "typescript": "^3.5.3",
     "webpack": "^4.29.6"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ],
+    "setupFiles": [
+      "reactTests/tests/setupTests.js"
+    ]
   }
 }

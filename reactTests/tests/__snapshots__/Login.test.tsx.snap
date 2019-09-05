@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test to see if the Login renders correctly 1`] = `
+<div
+  id="dvLogin"
+>
+  <form
+    method="POST"
+  >
+    <table>
+      <tbody>
+        <tr>
+          <td />
+          <td>
+            <h5>
+              Enter Login
+            </h5>
+          </td>
+        </tr>
+        <tr>
+          <td />
+          <td>
+            <span
+              id="spStatus"
+              style={
+                Object {
+                  "color": "red",
+                  "marginLeft": "1em",
+                }
+              }
+            >
+              
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            User:
+          </td>
+          <td>
+            <input
+              id="user"
+              name="user"
+              onChange={[Function]}
+              type="text"
+              value=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Password:
+          </td>
+          <td>
+            <input
+              name="pwd"
+              onChange={[Function]}
+              type="text"
+              value=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td
+            colSpan={2}
+            style={
+              Object {
+                "textAlign": "right",
+              }
+            }
+          >
+            <input
+              disabled={true}
+              onClick={[Function]}
+              type="button"
+              value="Login"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+`;

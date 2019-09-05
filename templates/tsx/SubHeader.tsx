@@ -9,11 +9,7 @@ interface IHeaderData {
     refreshperiod: string;
 }
 
-function isLoginPage() {
-    return window.location.href.indexOf("login") > 0;
-}
-
-class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string,
+export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string,
                                               minimalCurrencyRest: number, refreshPeriod: number}> {
 
     private unsubscribe: any;
@@ -27,8 +23,12 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
         this.fetchData();
     }
 
+    public isLoginPage() {
+       return window.location.href.indexOf("login") > 0;
+    }
+
     public render() {
-        if (!isLoginPage() && (this.state.rateDate === null || this.state.rateDate === undefined)) {
+        if (!this.isLoginPage() && (this.state.rateDate === null || this.state.rateDate === undefined)) {
             return "Loading...";
         }
         const isVisible: string = !StoreUtils.isLoggedIn() ? "none" : "";
@@ -84,7 +84,7 @@ class CESubHeader extends React.Component<{}, {usdCash: number, rateDate: string
             return;
         }
 
-        if (isLoginPage() && StoreUtils.isLoggedIn()) {
+        if (this.isLoginPage() && StoreUtils.isLoggedIn()) {
             this.fetchData();
             return;
         }
