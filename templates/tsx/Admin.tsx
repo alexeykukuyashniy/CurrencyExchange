@@ -9,9 +9,9 @@ interface ISetting {
   value: string;
 }
 
-class Admin extends React.Component<{}, constants.ISettings> {
+export class Admin extends React.Component<{}, constants.ISettings> {
 
-    private loaded: boolean = false;
+    public loaded: boolean = false;
     private status: string = "";
 
     constructor(props: any) {
@@ -34,6 +34,7 @@ class Admin extends React.Component<{}, constants.ISettings> {
     }
 
     public render() {
+        console.log("rendering...");
         if (!this.loaded) {
             return <div id="dvSettings">Loading...</div>;
         }
@@ -122,6 +123,56 @@ class Admin extends React.Component<{}, constants.ISettings> {
         );
     }
 
+    public fetchData() {
+        try {
+            const that = this;
+            fetch("./settings", StoreUtils.authHeader()).then((response) => {
+                if (response.ok) {
+                    let commission: string = "";
+                    let refreshPeriod: string = "";
+                    let surcharge: string = "";
+                    let minimalCommission: string = "";
+                    let buySellRateMargin: string = "";
+                    const data = response.json();
+                    data.then((d) => {
+                        const settings = (d as ISetting[]);
+                        for (const s of settings) {
+                            switch (s.name) {
+                                case constants.REFRESH_PERIOD:
+                                    refreshPeriod = s.value;
+                                    break;
+                                case constants.COMMISSION:
+                                    commission = s.value;
+                                    break;
+                                case constants.SURCHARGE:
+                                    surcharge = s.value;
+                                    break;
+                                case constants.MINIMAL_COMMISSION:
+                                    minimalCommission = s.value;
+                                    break;
+                                case constants.BUY_SELL_RATE_MARGIN:
+                                    buySellRateMargin = s.value;
+                                    break;
+                            }
+                        }
+
+                        that.setState({
+                            buySellRateMargin,
+                            commission,
+                            minimalCommission,
+                            refreshPeriod,
+                            surcharge
+                        });
+                        that.loaded = true;
+                        that.forceUpdate();
+                    });
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     public componentDidMount() {
         this.fetchData();
     }
@@ -168,52 +219,6 @@ class Admin extends React.Component<{}, constants.ISettings> {
 
     private clearStatus() {
         this.status = "";
-    }
-
-    private fetchData() {
-        const that = this;
-        fetch("./settings", StoreUtils.authHeader()).then((response) => {
-            if (response.ok) {
-                let commission: string = "";
-                let refreshPeriod: string = "";
-                let surcharge: string = "";
-                let minimalCommission: string = "";
-                let buySellRateMargin: string = "";
-                const data = response.json();
-                data.then((d) => {
-                    const settings = (d as ISetting[]);
-                    for (const s of settings) {
-                        switch (s.name) {
-                            case constants.REFRESH_PERIOD:
-                                refreshPeriod = s.value;
-                                break;
-                            case constants.COMMISSION:
-                                commission = s.value;
-                                break;
-                            case constants.SURCHARGE:
-                                surcharge = s.value;
-                                break;
-                            case constants.MINIMAL_COMMISSION:
-                                minimalCommission = s.value;
-                                break;
-                            case constants.BUY_SELL_RATE_MARGIN:
-                                buySellRateMargin = s.value;
-                                break;
-                        }
-                    }
-
-                    that.setState({
-                        buySellRateMargin,
-                        commission,
-                        minimalCommission,
-                        refreshPeriod,
-                        surcharge
-                    });
-                    that.loaded = true;
-                    that.forceUpdate();
-                });
-            }
-        });
     }
 
     private isDataValid() {
