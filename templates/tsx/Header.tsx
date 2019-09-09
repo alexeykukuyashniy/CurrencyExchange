@@ -11,12 +11,6 @@ import CELogin from "./Login";
 import { Redirect } from "react-router";
 import CESubHeader from "./SubHeader";
 
-interface IHeaderData {
-    value: string;
-    amount: string;
-    date: string;
-}
-
 function isLoginPage() {
     return window.location.href.indexOf("login") > 0;
 }
@@ -28,9 +22,7 @@ class CEHeader extends React.Component<{}, {}> {
 
     constructor(props: any) {
         super(props);
-        this.fetchData = this.fetchData.bind(this);
         this.handleStateChange = this.handleStateChange.bind(this);
-        this.fetchData();
         this.unsubscribe = store.subscribe(this.handleStateChange);
     }
 
@@ -41,7 +33,7 @@ class CEHeader extends React.Component<{}, {}> {
             window.location.href = "/login"; // redirect to login page
         } else {
             return <>
-                <img id="imgLogo" src="./static/images/logo.png" alt="Logo" style={{display: isVisible}}/>
+                <img id="imgLogo" src="./static/images/logo.png" alt="Logo" style={{display: isVisible}} />
                 <div id="dvTitle" style={{display: isVisible}}>
                     <h2>
                         Airport Currency Exchange Office
@@ -88,39 +80,10 @@ class CEHeader extends React.Component<{}, {}> {
         this.unsubscribe();
     }
 
-    private fetchData() {
-        if (!StoreUtils.isLoggedIn()) {
-            return;
-        }
-
-        const that = this;
-
-        fetch("./headerdata", StoreUtils.authHeader()).then((response) => {
-            if (response.ok) {
-                console.log(response);
-                const data = response.json();
-                data.then((dt) => {
-                    const d = (dt as IHeaderData[])[0];
-                    console.log("header data: ", dt, d.amount, d.date, d.value);
-                    const usdCashLocal: number = parseFloat(d.amount.replace(",", ""));
-
-                    that.setState({
-                        minimalCurrencyRest: d.value as unknown as number,
-                        rateDate: d.date,
-                        usdCash: usdCashLocal,
-                        usdCashStr: d.amount
-                    });
-                });
-            }
-        });
-    }
-
     private handleStateChange() {
         console.log("Header handleStateChange: ", StoreUtils.getStoreState(), store.getState());
-
         if (isLoginPage() && StoreUtils.isLoggedIn()) {
-            console.log("forceUpdate");
-            this.fetchData();
+            this.forceUpdate();
         }
     }
 }
