@@ -35,11 +35,11 @@ const transactionTypeFilterData: ITransactionTypeFilter[] = [{value: 0, name: "A
     {value: 3, name: "Sell"}, {value: 4, name: "Send/Receive"}, {value: 5, name: "Send"},
     {value: 6, name: "Receive"}, {value: 7, name: "Debit"}, {value: 8, name: "Credit"}];
 
-class Transactions extends React.Component<{}, {data: ITransactions[]|undefined, currency: ICurrency|undefined,
+export class Transactions extends React.Component<{}, {data: ITransactions[]|undefined, currency: ICurrency|undefined,
                                              dateFrom: Date|undefined, dateTo: Date|undefined,
                                              transactionTypeMode: ITransactionTypeFilter|undefined}> {
 
-    private loaded: boolean = false;
+    public loaded: boolean = false;
     private currencies: ICurrency[] = [];
     // Calc Transactions grid body height depending on page height
     private gridHeight: string = (window.innerHeight - 225) as unknown as string + "px";
@@ -58,7 +58,6 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
             transactionTypeMode: transactionTypeFilterData[0]
         };
         store.dispatch(view()); // in case edit form is active
-        this.fetchCurrency();
     }
 
     public render() {
@@ -129,10 +128,11 @@ class Transactions extends React.Component<{}, {data: ITransactions[]|undefined,
     }
 
     public componentDidMount() {
+        this.fetchCurrency();
         this.fetchData();
     }
 
-    private fetchCurrency() {
+    public fetchCurrency() {
         const that = this;
         fetch("./currencies", StoreUtils.authHeader()).then((response) => {
             if (response.ok) {
