@@ -15,6 +15,7 @@ from flask_jwt_extended import (
 
 app = Flask(__name__)
 engine = create_engine('postgres://rmhakrfcehwgbt:f539dde57021225d1099a250471176d12a67aa8c10818795bbec9f4b79c66f72@ec2-184-72-221-140.compute-1.amazonaws.com:5432/d90qi8ks9tjo4u')
+# engine = create_engine('postgresql://postgres:1@localhost:5432/postgres')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -206,7 +207,7 @@ def transactions():
                        when t.transactiontypeid = 2 then 'sell'
                        when t.transactiontypeid = 3 then 'send'
                        when t.transactiontypeid = 4 then 'receive' end transactiontype,
-                       case when t.transactiontypeid in (1, 2) then cast(t.commission as varchar)
+                       case when t.transactiontypeid in (1, 2) then cast(round(t.commission, 2) as varchar)
                             else 'n/a' end as commission,
                        case when t.transactiontypeid in (1, 2) then cast(t.rate as varchar)
                             else 'n/a' end as rate,

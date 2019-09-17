@@ -88,7 +88,9 @@ export class Transactions extends React.Component<{}, {data: ITransactions[]|und
         if (this.state.data && this.state.data.length > 0) {
             for (const d of this.state.data) {
                 sumAmount = sumAmount + parseFloat(d.amount);
-                sumCommission = sumCommission + parseFloat(d.commission);
+                if (d.commission !== "n/a") {
+                    sumCommission = sumCommission + parseFloat(d.commission);
+                }
             }
         }
 
