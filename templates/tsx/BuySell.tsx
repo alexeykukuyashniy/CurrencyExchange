@@ -247,7 +247,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
         } else if (this.validated(values)) {
             console.log("saving...", this.state, values);
             const op: number = (StoreUtils.getStoreState() === EDIT_BUY_STEP2 ?
-                TR_TRANSACTION_TYPES.BUY : TR_TRANSACTION_TYPES.SELL);
+                1 : 2); // TR_TRANSACTION_TYPES.BUY : TR_TRANSACTION_TYPES.SELL); - doesn't work
 
             console.log("params: ", op, ", ", this.state.amount, ", ", this.state.rate, ", ",
                 this.state.currencyid, ", ", this.state.commissionamount);

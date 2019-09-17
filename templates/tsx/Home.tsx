@@ -13,7 +13,7 @@ const CurrencyIDAttr: string = "currencyid";
 const CurrencyCodeAttr: string = "currencycode";
 const RateAttr: string = "rate";
 
-class Home extends React.Component<{}, {rates: constants.IRate[]|undefined, rate: number,
+export class Home extends React.Component<{}, {rates: constants.IRate[]|undefined, rate: number,
                                         currencyid: number, currencycode: string, minimalCurrencyRest: number}> {
 
     private unsubscribe: any;
