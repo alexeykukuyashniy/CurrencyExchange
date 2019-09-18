@@ -13,6 +13,7 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
                                               minimalCurrencyRest: number, refreshPeriod: number}> {
 
     private unsubscribe: any;
+    private isDataLoaded: boolean = false;
 
     constructor(props: any) {
         super(props);
@@ -63,15 +64,15 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
                 const data = response.json();
                 data.then((dat) => {
                     const d = (dat as IHeaderData[])[0];
-                    console.log("subheader data: ", data, d.amount, d.date, d.mincurrencyrest, d.refreshperiod);
                     const usdCashLocal: number = parseFloat(d.amount.replace(",", ""));
-
                     that.setState({
                         minimalCurrencyRest: d.mincurrencyrest as unknown as number,
                         rateDate: d.date,
                         refreshPeriod: d.refreshperiod as unknown as number,
                         usdCash: usdCashLocal
                     });
+                    this.isDataLoaded = true;
+                    this.forceUpdate();
                 });
             }
         });
@@ -84,7 +85,7 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
             return;
         }
 
-        if (this.isLoginPage() && StoreUtils.isLoggedIn()) {
+        if ((this.isLoginPage() || !this.isDataLoaded) && StoreUtils.isLoggedIn()) {
             this.fetchData();
             return;
         }

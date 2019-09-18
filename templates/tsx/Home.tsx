@@ -202,7 +202,7 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
     private handleStateChange() {
         console.log("Home handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         if (StoreUtils.getStoreState() === constants.SAVE_EDIT ||
-            (store.getState().main as IStoreState).data.type === constants.RATE_UPDATED) {
+            (store.getState().main as IStoreState).data.type === constants.RATE_UPDATED && this.isViewMode()) {
             this.fetchData();
         } else if (StoreUtils.getStoreState() === constants.VIEW_HOME) {
             this.getSetting();
