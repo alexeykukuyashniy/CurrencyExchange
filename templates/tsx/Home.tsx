@@ -7,6 +7,7 @@ import BuySell from "./BuySell";
 import {editBuy, editSell, editTransfer, view} from "./Actions";
 import store, {StoreUtils} from "./Store";
 import * as constants from "./Constants";
+import {IStoreState} from "./Constants";
 
 const OpAttr: string = "op";
 const CurrencyIDAttr: string = "currencyid";
@@ -200,7 +201,8 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
 
     private handleStateChange() {
         console.log("Home handleStateChange: ", StoreUtils.getStoreState(), store.getState());
-        if (StoreUtils.getStoreState() === constants.SAVE_EDIT) {
+        if (StoreUtils.getStoreState() === constants.SAVE_EDIT ||
+            (store.getState().main as IStoreState).data.type === constants.RATE_UPDATED) {
             this.fetchData();
         } else if (StoreUtils.getStoreState() === constants.VIEW_HOME) {
             this.getSetting();

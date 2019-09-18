@@ -115,6 +115,9 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
         } else if (rates[0] !== undefined && rates[0].date !== undefined) {
             console.log("SH rates:", rates);
             this.setState({rateDate: rates[0].date.substr(0, 19)});
+            if (this.state.refreshPeriod === 0) {
+                this.setState({refreshPeriod: 1});
+            }
         }
     }
 }
