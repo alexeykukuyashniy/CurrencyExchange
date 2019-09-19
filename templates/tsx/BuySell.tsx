@@ -275,15 +275,17 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
     private calcTotals() {
         console.log("calc totals ", this.state.amount, " ", this.state.settings.commission, " ",
             this.state.settings.surcharge, " ", this.state.settings.minimalCommission);
-        const commissionamount = Math.ceil(Math.max(parseFloat((this.state.amount *
+
+        const subtotal = this.state.rate !== undefined ?
+            Math.round(this.state.amount * this.state.rate * 100.0) / 100.0 : 0;
+        console.log("subtotal:", subtotal);
+
+        const commissionamount = Math.ceil(Math.max(parseFloat((subtotal *
             this.state.settings.commission / 100.0).toString()) +
             parseFloat(this.state.settings.surcharge.toString()),
             this.state.settings.minimalCommission) * 100.0) / 100.0;
         console.log(commissionamount);
 
-        const subtotal = this.state.rate !== undefined ?
-            Math.round(this.state.amount * this.state.rate * 100.0) / 100.0 : 0;
-        console.log("subtotal:", subtotal);
         const total = Math.round((subtotal + (StoreUtils.getStoreState() === EDIT_BUY ? -1 : 1) *
             commissionamount) * 100) / 100;
         this.setState({commissionamount, subtotal, total});
