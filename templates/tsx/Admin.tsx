@@ -186,15 +186,14 @@ export class Admin extends React.Component<{}, constants.ISettings> {
         let val: string = event.target.value;
 
         if (val.length > 0) {
+            console.log(val.indexOf("."));
             if (name === constants.REFRESH_PERIOD /*&& parseInt(val) == NaN*/) {
                 val = parseInt(val, 10).toString();
-            } else if (val[val.length - 1] !== "." && val[val.length - 1] !== "0") {
+            } else if (val.indexOf(".") > 0 && val[val.length - 1] !== "." && val.indexOf(".") <  val.length - 3) {
                 val = parseFloat(val).toString();
-
                 // leave 2 digits after dot
-                const val2: string = (Math.floor(parseFloat(val) * 100 ) / 100).toString() ;
-                console.log(parseFloat(val), Math.floor(parseFloat(val) * 100 ) / 100, val2);
-                if (parseFloat(val) !== Math.floor(parseFloat(val) * 100 ) / 100) {
+                const val2: string = Number(Math.floor(parseFloat(val) * 100 ) / 100).toFixed(2) ;
+                if (val !== val2) {
                     val = val2;
                 }
             }
