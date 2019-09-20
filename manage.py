@@ -203,10 +203,10 @@ def transactions():
     s = text("""select to_char(t.date,'yyyy-MM-dd HH24:mi:ss') as date,
                        c.code,
                        cast(t.amount as varchar) as amount,
-                       case when t.transactiontypeid = 1 then 'buy'
-                       when t.transactiontypeid = 2 then 'sell'
-                       when t.transactiontypeid = 3 then 'send'
-                       when t.transactiontypeid = 4 then 'receive' end transactiontype,
+                       case when t.transactiontypeid = 1 then 'Buy'
+                       when t.transactiontypeid = 2 then 'Sell'
+                       when t.transactiontypeid = 3 then 'Send'
+                       when t.transactiontypeid = 4 then 'Receive' end transactiontype,
                        case when t.transactiontypeid in (1, 2) then cast(round(t.commission, 2) as varchar)
                             else 'n/a' end as commission,
                        case when t.transactiontypeid in (1, 2) then cast(t.rate as varchar)

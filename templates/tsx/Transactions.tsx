@@ -105,7 +105,7 @@ export class Transactions extends React.Component<{}, {data: ITransactions[]|und
                                 sumAmount.toFixed(2) : ""}
                             footerStyle={{textAlign: "right"}}/>
                     <Column field="transactiontype" header="Type" sortable={true}
-                            style={{textAlign: "right", width: "5em"}}/>
+                            style={{width: "5em"}}/>
                     <Column field="commission" header="Commission" sortable={true}
                             style={{textAlign: "right", width: "10em"}}
                             footer={this.state.currency && this.state.currency.currencyid !== anyCurrency ?
