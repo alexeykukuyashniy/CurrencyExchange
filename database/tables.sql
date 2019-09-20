@@ -45,17 +45,17 @@ create table setting
 );
 
 insert into currency(code,name)
-select 'USD', 'United States dollar'
+select 'USD', 'United States Dollar'
 union all
-select 'EUR', 'European euro'
+select 'EUR', 'European Euro'
 union all
-select 'GBP', 'Pound sterling'
+select 'GBP', 'Pound Sterling'
 union all
-select 'ILS', 'Israeli new shekel'
+select 'ILS', 'Israeli New Shekel'
 union all
-select 'TRY', 'Turkish lira'
+select 'TRY', 'Turkish Lira'
 union all
-select 'CAD', 'Canadian dollar'
+select 'CAD', 'Canadian Dollar'
 union all
 select 'CNY', 'Chinese Yuan Renminbi';
 
