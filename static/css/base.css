@@ -5,6 +5,12 @@
     left:5px;
 }
 
+#dvLinks {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 #dvLinks > ul {
     margin: 0; 
     padding: 4px; 
@@ -75,7 +81,7 @@ a.selected {
 
 #dvTitle {
     float:left;
-    width:80%;
+    width:100%;
     text-align:center;
 }
 
