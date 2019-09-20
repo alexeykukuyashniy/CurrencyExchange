@@ -41,6 +41,7 @@ interface IBuySellState {
     subtotal: number;
     total: number;
     commissionamount: number;
+    commissionamountStr: string;
     settings: ISettings;
     step: number|undefined; // needed to refresh the form on back/next button click
 }
@@ -74,6 +75,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             amount: props.amount,
             amountRest: 0,
             commissionamount: 0,
+            commissionamountStr: "0",
             currencycode: props.currencycode,
             currencyid: props.currencyid,
             rate: props.rate,
@@ -96,7 +98,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
                              rate={this.state.rate}
                              amount={this.state.amount}
                              subtotal={this.state.subtotal}
-                             commissionamount={this.state.commissionamount}
+                             commissionamountStr={this.state.commissionamountStr}
                              total={this.state.total}
                              step={this.state.step}
             />
@@ -284,18 +286,18 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             this.state.settings.commission / 100.0).toString()) +
             parseFloat(this.state.settings.surcharge.toString()),
             this.state.settings.minimalCommission) * 100.0) / 100.0;
-        console.log(commissionamount);
+
+        const commissionamountStr = Number(commissionamount).toFixed(2);
+        console.log(commissionamount, commissionamountStr);
 
         const total = Math.round((subtotal + (StoreUtils.getStoreState() === EDIT_BUY ? -1 : 1) *
             commissionamount) * 100) / 100;
-        this.setState({commissionamount, subtotal, total});
+        this.setState({commissionamount, commissionamountStr, subtotal, total});
     }
 
     private amountChange(event: any) {
         const amount: number = event.target.value;
-        if (amount >= 10) {
-            this.setState({amount}, this.calcTotals);
-        }
+        this.setState({amount}, this.calcTotals);
     }
 
     private cancelClick(event: any) {
@@ -311,7 +313,7 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 let BuySellForm = (props: any) => {
     // "step" - just passed inside to force form refresh
     const {error, handleSubmit, amountChange, cancelClick, backClick, currencycode, rate, amount, subtotal,
-           commissionamount, total, step} = props;
+           commissionamountStr, total, step} = props;
     const op: string = (StoreUtils.isBuy() ? "Buy" : "Sell");
 
     return (<div id="dvData2">
@@ -370,7 +372,7 @@ let BuySellForm = (props: any) => {
                             <label>Commission:</label>
                         </td>
                         <td align="right">
-                            <label>{commissionamount}</label>
+                            <label>{commissionamountStr}</label>
                         </td>
                     </tr>
                     <tr>

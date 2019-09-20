@@ -190,6 +190,13 @@ export class Admin extends React.Component<{}, constants.ISettings> {
                 val = parseInt(val, 10).toString();
             } else if (val[val.length - 1] !== "." && val[val.length - 1] !== "0") {
                 val = parseFloat(val).toString();
+
+                // leave 2 digits after dot
+                const val2: string = (Math.floor(parseFloat(val) * 100 ) / 100).toString() ;
+                console.log(parseFloat(val), Math.floor(parseFloat(val) * 100 ) / 100, val2);
+                if (parseFloat(val) !== Math.floor(parseFloat(val) * 100 ) / 100) {
+                    val = val2;
+                }
             }
         }
 
