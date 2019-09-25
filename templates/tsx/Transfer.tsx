@@ -201,7 +201,7 @@ let TransferForm = (props: any) => {
                             <Field
                                 name="currencyid"
                                 component="select"
-                                style={{width: "166px"}}
+                                style={{width: "164px"}}
                                 value={currencyid}
                             >
                                 {currencies.map((c: ICurrency) => (
@@ -223,7 +223,7 @@ let TransferForm = (props: any) => {
                                 component="input"
                                 type="number"
                                 value={amount}
-                                style={{textAlign: "right"}}
+                                style={{textAlign: "right", width: "164px"}}
                             />
                         </td>
                     </tr>
@@ -236,6 +236,7 @@ let TransferForm = (props: any) => {
                                 name="person"
                                 component="input"
                                 type="text"
+                                style={{width: "164px"}}
                             />
                         </td>
                     </tr>
