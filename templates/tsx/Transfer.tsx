@@ -30,7 +30,7 @@ interface IFormData {
 
 const enum TR_TRANSACTION_TYPES {BUY = 1, SELL = 2, SEND = 3, RECEIVE = 4}
 
-class Transfer extends React.Component<ITransferProps, ITransferState> {
+export class Transfer extends React.Component<ITransferProps, ITransferState> {
 
     private formData: IFormData = {amount: 0, currencyid: 0, person: "", btnClicked: ""};
 
@@ -46,10 +46,11 @@ class Transfer extends React.Component<ITransferProps, ITransferState> {
         this.state = {
             amount: props.amount,
             currencies: undefined,
-            currencyid: props.currencyid,
-           // person: "",
+            currencyid: props.currencyid
         };
-        console.log("initial state:", this.state);
+    }
+
+    public componentDidMount() {
         this.fetchCurrency();
     }
 
@@ -200,7 +201,7 @@ let TransferForm = (props: any) => {
                             <Field
                                 name="currencyid"
                                 component="select"
-                                style={{width: "100%"}}
+                                style={{width: "166px"}}
                                 value={currencyid}
                             >
                                 {currencies.map((c: ICurrency) => (
