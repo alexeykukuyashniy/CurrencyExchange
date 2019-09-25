@@ -347,7 +347,7 @@ let BuySellForm = (props: any) => {
                                 value={props.amount}
                                 disabled={StoreUtils.getStoreState() === EDIT_BUY_STEP2 ||
                                           StoreUtils.getStoreState() === EDIT_SELL_STEP2}
-                                style={{textAlign: "right"}}
+                                style={{textAlign: "right", width: "164px"}}
                             />
                         </td>
                     </tr>
