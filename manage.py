@@ -8,20 +8,20 @@ import json
 from typing import Dict
 import constants
 
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
-)
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token,
+                                get_jwt_identity)
 
 app = Flask(__name__)
-engine = create_engine('postgres://rmhakrfcehwgbt:f539dde57021225d1099a250471176d12a67aa8c10818795bbec9f4b79c66f72@ec2-184-72-221-140.compute-1.amazonaws.com:5432/d90qi8ks9tjo4u')
+# engine = create_engine('postgres://rmhakrfcehwgbt:f539dde57021225d1099a250471176d12a67aa8c10818795bbec9f4b79c66f72@ec2-184-72-221-140.compute-1.amazonaws.com:5432/d90qi8ks9tjo4u')
 # engine = create_engine('postgresql://postgres:1@localhost:5432/postgres')
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+engine = create_engine(
+    'postgresql://postgres:1@localhost:5432/CurrencyExchange')
+db_session = scoped_session(
+    sessionmaker(autocommit=False, autoflush=False, bind=engine))
 conn = engine.connect()
 app.config['SECRET_KEY'] = 'somesuperrandomsecretkeynoonecancrack'
 jwt = JWTManager(app)
+
 
 # returns cash rest amount for the given currency
 @app.route("/cashamount")
@@ -31,11 +31,11 @@ def getCashAmount():
     s = text("select to_char(c.amount,'999,999.99') amount "
              "from cash c "
              "join currency cur on c.currencyid = cur.currencyid "
-             "where cur.code = :code"
-            )
+             "where cur.code = :code")
     data = conn.execute(s, code=code).fetchall()
     jsonData = json.dumps([dict(d) for d in data])
     return jsonData
+
 
 # returns data for the page header: USD cash rest amount, rates last updated date, "minimal currency rest" setting value
 @app.route("/headerdata")
@@ -50,41 +50,47 @@ def headerdata():
              "setting s2 "
              "where cur.code = 'USD' and s.name=:minCurrencyRest "
              "and s2.name = :refreshPeriod "
-             "group by c.amount, s.value, s2.value"
-            )
-    data = conn.execute(s, minCurrencyRest=constants.MINIMAL_CURRENCY_REST, refreshPeriod=constants.REFRESH_PERIOD).fetchall()
+             "group by c.amount, s.value, s2.value")
+    data = conn.execute(s,
+                        minCurrencyRest=constants.MINIMAL_CURRENCY_REST,
+                        refreshPeriod=constants.REFRESH_PERIOD).fetchall()
     jsonData = json.dumps([dict(d) for d in data])
     return jsonData
+
 
 # returns currency exchange rates data
 @app.route("/rates")
 @jwt_required
 def rates():
-    s= text("select c.currencyid, c.code, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
-     " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date "
-     "from currency c "
-     "left join rate r on r.currencyid = c.currencyid "
-     "and r.date = (select max(date) date from rate r2 where r2.currencyid=r.currencyid) "
-     "where c.code <> 'USD' order by c.code")
+    s = text(
+        "select c.currencyid, c.code, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
+        " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date "
+        "from currency c "
+        "left join rate r on r.currencyid = c.currencyid "
+        "and r.date = (select max(date) date from rate r2 where r2.currencyid=r.currencyid) "
+        "where c.code <> 'USD' order by c.code")
     rates = conn.execute(s).fetchall()
     jsonRates = json.dumps([dict(r) for r in rates])
     return jsonRates
+
 
 # returns home page grid data
 @app.route("/homerates")
 @jwt_required
 def homerates():
-    s= text("select c.currencyid, c.code, c.name, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
-     " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date, "
-     "coalesce(cast(cs.amount as varchar), '0.00') amount "
-     "from currency c "
-     "left join rate r on r.currencyid = c.currencyid "
-     "and r.date = (select max(date) date from rate r2 where r2.currencyid=r.currencyid) "
-     "left join cash cs on cs.currencyid = c.currencyid "
-     "where c.code <> 'USD' order by c.name")
+    s = text(
+        "select c.currencyid, c.code, c.name, rtrim(cast(r.buyrate as varchar), '0') buyrate, "
+        " rtrim(cast(r.sellrate as varchar), '0') sellrate, cast(r.date as varchar) date, "
+        "coalesce(cast(cs.amount as varchar), '0.00') amount "
+        "from currency c "
+        "left join rate r on r.currencyid = c.currencyid "
+        "and r.date = (select max(date) date from rate r2 where r2.currencyid=r.currencyid) "
+        "left join cash cs on cs.currencyid = c.currencyid "
+        "where c.code <> 'USD' order by c.name")
     rates = conn.execute(s).fetchall()
     jsonRates = json.dumps([dict(r) for r in rates])
     return jsonRates
+
 
 # provides response to the "/", '/home', '/trans', '/admin', '/login' urls
 @app.route("/", methods=['GET'])
@@ -94,6 +100,7 @@ def homerates():
 @app.route("/login", methods=['GET'])
 def home():
     return render_template("home.html")
+
 
 # saves new transaction data to the database
 @app.route("/transaction", methods=['POST'])
@@ -107,16 +114,32 @@ def transaction():
     commission: str = data[constants.TR_COMMISSION]
     note: str = data[constants.TR_NOTE]
     user: str = get_jwt_identity()
-    s = text("insert into transactions(transactiontypeid, currencyid, amount, date, rate, commission, note, username)"
-             "values(:transactiontype, :currencyid, :amount, now(), :rate, :commission, :note, :user)")
-    conn.execute(s, amount=amount, rate=rate, transactiontype=transactiontype, currencyid=currencyid,
-                 commission=commission, note=note, user=user)
+    s = text(
+        "insert into transactions(transactiontypeid, currencyid, amount, date, rate, commission, note, username)"
+        "values(:transactiontype, :currencyid, :amount, now(), :rate, :commission, :note, :user)"
+    )
+    conn.execute(s,
+                 amount=amount,
+                 rate=rate,
+                 transactiontype=transactiontype,
+                 currencyid=currencyid,
+                 commission=commission,
+                 note=note,
+                 user=user)
     return 'OK'
+
 
 # updates exchange rate data for the given currency
 def updRate(currencyid, buyrate, sellrate, date):
-     s = text("update rate set buyrate=:buyrate, sellrate=:sellrate, date=:date where currencyid=:currencyid")
-     conn.execute(s, currencyid=currencyid, buyrate=buyrate, sellrate=sellrate, date=date)
+    s = text(
+        "update rate set buyrate=:buyrate, sellrate=:sellrate, date=:date where currencyid=:currencyid"
+    )
+    conn.execute(s,
+                 currencyid=currencyid,
+                 buyrate=buyrate,
+                 sellrate=sellrate,
+                 date=date)
+
 
 # saves currencies exchange rates to the database
 @app.route("/saverates", methods=['POST'])
@@ -124,13 +147,16 @@ def updRate(currencyid, buyrate, sellrate, date):
 def saveRates():
     rates = json.loads(request.data)
     for rate in rates:
-        updRate(rate["currencyid"], rate["buyrate"], rate["sellrate"], rate["date"])
+        updRate(rate["currencyid"], rate["buyrate"], rate["sellrate"],
+                rate["date"])
     return 'OK'
+
 
 #saves one updated setting to the database
 def updSetting(name, value):
-     s = text("update setting set value=:value where name=:name")
-     conn.execute(s,name=name, value=value)
+    s = text("update setting set value=:value where name=:name")
+    conn.execute(s, name=name, value=value)
+
 
 #saves updated settings to the database
 @app.route("/savesettings", methods=['POST'])
@@ -141,9 +167,12 @@ def saveSettings():
     updSetting(constants.REFRESH_PERIOD, data[constants.REFRESH_PERIOD])
     updSetting(constants.COMMISSION, data[constants.COMMISSION])
     updSetting(constants.SURCHARGE, data[constants.SURCHARGE])
-    updSetting(constants.MINIMAL_COMMISSION, data[constants.MINIMAL_COMMISSION])
-    updSetting(constants.BUY_SELL_RATE_MARGIN, data[constants.BUY_SELL_RATE_MARGIN])
+    updSetting(constants.MINIMAL_COMMISSION,
+               data[constants.MINIMAL_COMMISSION])
+    updSetting(constants.BUY_SELL_RATE_MARGIN,
+               data[constants.BUY_SELL_RATE_MARGIN])
     return 'OK'
+
 
 #returns particular setting value
 @app.route("/setting", methods=['GET'])
@@ -152,11 +181,11 @@ def setting():
     name = request.args.get("name")
     s = text("""select cast(value as varchar) as value
                   from setting
-                 where name=:name"""
-            )
+                 where name=:name""")
     settings = conn.execute(s, name=name).fetchall()
     jsonSetting = json.dumps([dict(s) for s in settings])
     return jsonSetting
+
 
 # returns settings data
 @app.route("/settings", methods=['GET'])
@@ -166,10 +195,11 @@ def settings():
                        cast(case when name ='RefreshPeriod' then cast(value as int) else value end as varchar) as value 
                   from setting 
                  where name in ('Commission', 'RefreshPeriod', 'Surcharge', 'MinimalCommission', 'BuySellRateMargin')"""
-            )
+             )
     settings = conn.execute(s).fetchall()
     jsonSettings = json.dumps([dict(s) for s in settings])
     return jsonSettings
+
 
 # returns transactions data filtered according to the given filters.
 @app.route("/transactions", methods=['GET'])
@@ -183,21 +213,25 @@ def transactions():
     print("currency:", currencyid, sDateFrom, sDateTo, sDateFrom[:24].strip())
 
     if currencyid is None:
-        currencyid = "0" # All
+        currencyid = "0"  # All
 
     dateFrom = '20010101'
     if not (sDateFrom is None or sDateFrom == 'undefined' or sDateFrom == ''):
         if (len(sDateFrom) < 20):
             dateFrom = datetime.strptime(sDateFrom, "%m/%d/%Y %H:%M")
         else:
-            dateFrom = datetime.strptime(sDateFrom[:24].strip(), "%a %b %d %Y %H:%M:%S").replace(second=0).strftime("%Y%m%d %H:%M:%S")
+            dateFrom = datetime.strptime(
+                sDateFrom[:24].strip(), "%a %b %d %Y %H:%M:%S").replace(
+                    second=0).strftime("%Y%m%d %H:%M:%S")
 
     dateTo = '20991231'
-    if not (sDateTo is None or sDateTo== 'undefined' or sDateTo== ''):
+    if not (sDateTo is None or sDateTo == 'undefined' or sDateTo == ''):
         if (len(sDateTo) < 20):
             dateTo = datetime.strptime(sDateTo, "%m/%d/%Y %H:%M")
         else:
-            dateTo = datetime.strptime(sDateTo[:24].strip(), "%a %b %d %Y %H:%M:%S").replace(second=59).strftime("%Y%m%d %H:%M:%S")
+            dateTo = datetime.strptime(
+                sDateTo[:24].strip(), "%a %b %d %Y %H:%M:%S").replace(
+                    second=59).strftime("%Y%m%d %H:%M:%S")
     print(dateFrom, ' | ', dateTo)
 
     s = text("""select to_char(t.date,'yyyy-MM-dd HH24:mi:ss') as date,
@@ -229,19 +263,19 @@ def transactions():
                             or :transactionTypeMode = 7 /* Debit */ and t.transactiontypeid in (2, 3) /*sell/send*/
                             or :transactionTypeMode = 8 /* Credit */ and t.transactiontypeid in  (1, 4) /*buy/receive*/
                        )
-                       order by t.date desc"""
-         )
+                       order by t.date desc""")
 
     if transactionTypeMode == 'undefined' or transactionTypeMode == '':
-        transactionTypeMode = 0 # All
+        transactionTypeMode = 0  # All
 
-    data = conn.execute(s, currencyid = currencyid,
-                        dateFrom = dateFrom,
-                        dateTo = dateTo,
-                        transactionTypeMode = transactionTypeMode
-                       ).fetchall()
+    data = conn.execute(s,
+                        currencyid=currencyid,
+                        dateFrom=dateFrom,
+                        dateTo=dateTo,
+                        transactionTypeMode=transactionTypeMode).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
+
 
 # returns list of all currencies with addition of 'All' option
 @app.route("/currencies", methods=['GET'])
@@ -256,18 +290,18 @@ def currencies():
                                coalesce(c.amount, 0) amountRest
                           from currency t
                           left join cash c on c.currencyid = t.currencyid
-                		 union all
-                		select 0,
-                	           'All',
-                	           0
-                	   ) t
+                         union all
+                        select 0,
+                               'All',
+                               0
+                       ) t
                  order by case when t.code = 'All' then 0
-                	           when t.code = 'USD' then 1
-                			   else 2 end, t.code"""
-         )
+                               when t.code = 'USD' then 1
+                               else 2 end, t.code""")
     data = conn.execute(s).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
+
 
 # returns rest amount in the office cash for the given currency
 @app.route("/cash", methods=['GET'])
@@ -276,11 +310,11 @@ def cash():
     currencyid: int = request.args.get("currencyid")
     s = text("""select cast(t.amount as varchar) amount
                   from cash t
-                 where t.currencyid = :currencyid"""
-         )
-    data = conn.execute(s, currencyid = currencyid).fetchall()
+                 where t.currencyid = :currencyid""")
+    data = conn.execute(s, currencyid=currencyid).fetchall()
     jsonData = json.dumps([dict(s) for s in data])
     return jsonData
+
 
 # check password, if correct returns jwt access token, otherwise returns error message
 @app.route("/doLogin", methods=['POST'])
@@ -290,17 +324,21 @@ def doLogin():
     pwd: str = data["pwd"]
 
     if (pwd == "1"):
-        payload: Dict[str, str] = { "user": user }
-        token: str = create_access_token(identity = user, fresh = False, expires_delta = False)
+        payload: Dict[str, str] = {"user": user}
+        token: str = create_access_token(identity=user,
+                                         fresh=False,
+                                         expires_delta=False)
         return token
     else:
-        return "Incorrect password" # password hardcoded to 1, user name can be any
+        return "Incorrect password"  # password hardcoded to 1, user name can be any
+
 
 # catch all incorrect paths
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
     return 'No page at path: %s' % path
+
 
 if __name__ == "__main__":
     app.run(debug=True)
