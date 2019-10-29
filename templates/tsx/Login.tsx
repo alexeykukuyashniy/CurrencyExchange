@@ -98,7 +98,6 @@ export class CELogin extends React.Component<{}, {user: string, pwd: string, sta
             user: this.state.user
         };
         axios.post("/doLogin", data).then((response) => {
-                console.log("response: ", response);
                 if (response.data === "Incorrect password") {
                     that.setState({status: response.data});
                 } else {

@@ -48,7 +48,6 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
     }
 
     public componentWillUnmount(): void {
-        console.log("CESubHeader componentWillUnmount");
         this.unsubscribe();
     }
 
@@ -79,8 +78,6 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
     }
 
     private handleStateChange() {
-        console.log("SubHeader handleStateChange: ", StoreUtils.getStoreState(), store.getState());
-
         if (!StoreUtils.isLoggedIn()) {
             return;
         }
@@ -114,7 +111,6 @@ export class CESubHeader extends React.Component<{}, {usdCash: number, rateDate:
         if (rates === undefined) {
             return;
         } else if (rates[0] !== undefined && rates[0].date !== undefined) {
-            console.log("SH rates:", rates);
             this.setState({rateDate: rates[0].date.substr(0, 19)});
             if (this.state.refreshPeriod === 0) {
                 this.setState({refreshPeriod: 1});

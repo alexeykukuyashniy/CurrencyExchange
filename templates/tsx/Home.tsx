@@ -55,16 +55,10 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
             return "";
         }
 
-        console.log("About to render Home");
-        console.log("store.main: ", store.getState().main);
-        console.log("store.security: ", store.getState().security);
-
         if (StoreUtils.isLoggedIn() && (this.state.rates === undefined || this.state.rates.length === 0)) {
             this.fetchData();
             return (<div id="dvHome">Loading ...</div>);
         } else if (this.state.rates && this.state.rates.length > 0) {
-            console.log("rates: ", this.state.rates);
-            console.log("store state: ", StoreUtils.getStoreState());
             const editForm = (StoreUtils.getStoreState() === constants.EDIT_BUY ||
                               StoreUtils.getStoreState() === constants.EDIT_SELL ?
                 <BuySell rate={this.state.rate} amount={100} currencycode={this.state.currencycode}
@@ -112,7 +106,6 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
     }
 
     private fetchData() {
-        console.log("fetch home rates: ", StoreUtils.isLoggedIn());
         if (!StoreUtils.isLoggedIn()) {
             return;
         }
@@ -121,11 +114,9 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
         fetch("./homerates", StoreUtils.authHeader()
         ).then((response) => {
             if (response.ok) {
-                console.log("homerates: ", response);
                 const data = response.json();
                 data.then((d) => {
                     const rates = (d as constants.IRate[]);
-                    console.log("rates: ", rates);
                     that.setState({rates}, that.switchToView);
                 });
             }
@@ -134,7 +125,6 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
 
     // switch to HOME_VIEW state
     private switchToView() {
-        console.log("switchToView");
         if (StoreUtils.getStoreState() === constants.SAVE_EDIT) {
             store.dispatch(view());
         }
@@ -154,7 +144,6 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
         store.dispatch(op === "buy" ? editBuy(1) : editSell(1)); // dispatch action
         this.setState({currencycode, rate, currencyid},
             () => {
-                console.log("state: ", this.state);
                 this.forceUpdate();
             });
     }
@@ -200,7 +189,6 @@ export class Home extends React.Component<{}, {rates: constants.IRate[]|undefine
     }
 
     private handleStateChange() {
-        console.log("Home handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         if (StoreUtils.getStoreState() === constants.SAVE_EDIT ||
             (store.getState().main as IStoreState).data.type === constants.RATE_UPDATED && this.isViewMode()) {
             this.fetchData();

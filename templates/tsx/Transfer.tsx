@@ -58,9 +58,6 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
         if (this.state.currencies === undefined) {
             return "Loading...";
         }
-        console.log("rendering Transfer");
-        console.log(this.props);
-        console.log(this.state);
 
         // @ts-ignore
         TransferForm = reduxForm({
@@ -86,16 +83,12 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
                     let currencies: ICurrency[] = (d as ICurrency[]);
                     currencies = currencies.slice(1); // remove "ALL"
                     that.setState({currencies});
-                    console.log(currencies[0].toString());
-                    console.log("currencies fetched");
                 });
             }
         });
     }
 
     private saveFormData() {
-        console.log("saving...");
-        console.log("formData:", this.formData, this.state);
         const currencyid: number = this.formData.currencyid;
 
         const transactionType: number = (this.formData.btnClicked === "send" ?
@@ -109,11 +102,9 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
             Rate: 0, // N/A
             TransactionType: transactionType
         };
-        console.log(data);
 
         axios.post("/transaction", data, StoreUtils.authHeader())
             .then((response) => {
-                console.log(response);
                 store.dispatch(saveEdit()); // return to grid
             })
             .catch((error) => {
@@ -123,8 +114,6 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
 
     private validateForm() {
         let errors = "";
-        console.log("validating: ", this.formData.amount, this.formData.person, this.formData.currencyid,
-            this.state.currencies);
         if (this.formData.amount < 10) {
             errors = errors + "Amount should not be less than 10. \n";
         }
@@ -144,8 +133,6 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
                 }
             }
 
-            console.log("found amount rest:", amountRest);
-
             if (this.formData.amount - amountRest > 0) {
                 errors = errors + "Amount should not be greater than " + amountRest + ".";
             }
@@ -159,27 +146,17 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
     }
 
     private submit(values: any) {
-        console.log("submit");
-        console.log(values);
-
         this.formData = (values as IFormData);
         this.validateForm();
     }
 
     private cancelClick(event: any) {
-        console.log("cancel clicked");
         store.dispatch(cancelEdit());
     }
 }
 
 let TransferForm = (props: any) => {
     const {error, handleSubmit, cancelClick, currencyid, currencies, amount} = props;
-    console.log(props);
-    console.log(props.currencyid);
-    console.log(amount);
-    console.log(props.amount);
-    console.log("store state: ", StoreUtils.getStoreState());
-
     return (<div id="dvData2">
             <form onSubmit={handleSubmit}>
                 <div id="dvClose">

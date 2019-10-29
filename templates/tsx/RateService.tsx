@@ -88,7 +88,6 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
                 data.then((d) => {
 
                     const rates = d as IRate[];
-                    console.log("DB rates: ", rates);
                     that.setState({rates});
 
                     let currencyCodes: string = "";
@@ -97,11 +96,8 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
                             currencyCodes = currencyCodes + r.code + ",";
                         }
                     }
-                    console.log("currencyCodes: ", currencyCodes);
                     currencyCodes = currencyCodes.slice(0, currencyCodes.length - 1);
                     that.ratesURL = that.ratesURL + currencyCodes; // full url with currency codes to get rates for
-                    console.log("rates url:", that.ratesURL);
-                    console.log("currencies fetched");
                 });
             }
         });
@@ -115,7 +111,6 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
                 data.then((d) => {
                     const settings = (d as ISetting[]);
                     for (const s of settings) {
-                        console.log(s);
                         if (s.name === constants.BUY_SELL_RATE_MARGIN) {
                             that.setState({
                                 buySellRateMargin: s.value as unknown as number
@@ -141,7 +136,6 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
                 },
                 this.state.refreshPeriod * 1000);
         }
-        console.log("service state:", this.state);
     }
 
     private updateRates(rates: IReceivedRates) {
@@ -154,7 +148,6 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
             (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" +
             (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + ":" +
             (d.getSeconds() < 10 ? "0" : "") + d.getSeconds();
-        console.log("new date:", d, " str:", ds);
 
         // match the stored rates with the received ones
         for (const nr of newRates) {
@@ -185,19 +178,13 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
             rate = 1 / rate; // reverse rate: 0.88 EUR -> 1.1363 USD
             rate = rate + (0.5 - Math.random()) * 0.01; // add random part to differ rate from previous one
             rate = Math.round(rate * 10000) / 10000; // round to 4 digits precision
-            console.log("currency: ", code, "rate: ", rate);
 
             // buy rate = rate - buySellRateMargin/2 %; sell rate = rate + buySellRateMargin/2 %
             nr.buyrate = Math.round(rate * (1 - this.state.buySellRateMargin / 200) * 10000) / 10000;
             nr.sellrate = Math.round(rate * (1 + this.state.buySellRateMargin / 200) * 10000) / 10000;
-
-            console.log(nr.buyrate, " " , nr.sellrate, " ", this.state.buySellRateMargin, " ",
-                         (1 - this.state.buySellRateMargin / 200));
-
             nr.date = ds;
         }
 
-        console.log("updated rates: ", newRates);
         this.saveRates(newRates);
     }
 
@@ -219,23 +206,19 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
             fetch(this.ratesURL).then((response) => {
                 if (response.ok) {
                     const data = response.json();
-                    console.log(data);
                     data.then((d) => {
                         const rates = (d as IRateData).quotes;
-                        console.log("REAL received rates: ", rates);
                         that.updateRates(rates);
                     });
                 }
             });
         } else {
             const rates = sampleRatesData.quotes;
-            console.log("FAKE received rates: ", rates);
             this.updateRates(rates);
         }
     }
 
     private handleStateChange() {
-        console.log("Rate service handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         if (StoreUtils.getStoreState() === constants.SETTINGS_UPDATED) {
             const settings = store.getState().main.data.data as constants.ISettings;
             if (settings !== undefined) {

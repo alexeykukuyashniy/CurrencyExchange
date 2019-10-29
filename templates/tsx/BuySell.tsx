@@ -126,9 +126,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
     }
 
     private handleStateChange() {
-        console.log("BS handleStateChange: ", StoreUtils.getStoreState(), store.getState());
-        console.log(store.getState().main);
-
         if (StoreUtils.getStoreState() === EDIT_BUY_STEP2 ||
             StoreUtils.getStoreState() === EDIT_SELL_STEP2) {
             return;
@@ -136,16 +133,14 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 
         if (store.getState().main === undefined || store.getState().main.data === undefined ||
             store.getState().main.data.data === undefined) {
-            console.log("no data. exiting 1");
             return;
         }
 
         const rates = store.getState().main.data.data as IRate[];
         if (rates === undefined) {
-            console.log("no data. exiting 2");
             return;
         }
-        console.log("rates: ", rates);
+
         const currencyid = this.state.currencyid;
         let rate = 0;
         for (const r of rates) {
@@ -156,7 +151,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             }
         }
 
-        console.log("found rate:", rate);
         try {
             this.setState({rate}, this.calcTotals);
         } catch (err) {
@@ -176,8 +170,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
                 data.then((d) => {
                     const settings = (d as ISetting[]);
                     for (const s of settings) {
-                        console.log(s);
-
                         switch (s.name) {
                             case COMMISSION:
                                 commission = s.value as unknown as number;
@@ -209,7 +201,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 
     private validated(values: any) {
         let errors: string = "";
-        console.log("validation:", this.state);
 
         this.formData = (values as IFormData);
         if (this.formData.amount < 10) {
@@ -238,21 +229,13 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
     }
 
     private submit(values: any) {
-        // print the form values to the console
-        console.log("submit");
-
         if ((StoreUtils.getStoreState() === EDIT_BUY ||
             StoreUtils.getStoreState() === EDIT_SELL)) {
             store.dispatch(this.stepAction());
-            console.log(store.getState());
             this.setState({step: 2});
         } else if (this.validated(values)) {
-            console.log("saving...", this.state, values);
             const op: number = (StoreUtils.getStoreState() === EDIT_BUY_STEP2 ?
                 1 : 2); // TR_TRANSACTION_TYPES.BUY : TR_TRANSACTION_TYPES.SELL); - doesn't work
-
-            console.log("params: ", op, ", ", this.state.amount, ", ", this.state.rate, ", ",
-                this.state.currencyid, ", ", this.state.commissionamount);
 
             const data = {
                 Amount: this.state.amount,
@@ -265,7 +248,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
 
             axios.post("/transaction", data, StoreUtils.authHeader())
                 .then((response) => {
-                    console.log(response);
                     store.dispatch(saveEdit()); // return to grid
                 })
                 .catch((error) => {
@@ -275,12 +257,8 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
     }
 
     private calcTotals() {
-        console.log("calc totals ", this.state.amount, " ", this.state.settings.commission, " ",
-            this.state.settings.surcharge, " ", this.state.settings.minimalCommission);
-
         const subtotal = this.state.rate !== undefined ?
             Math.round(this.state.amount * this.state.rate * 100.0) / 100.0 : 0;
-        console.log("subtotal:", subtotal);
 
         const commissionamount = Math.ceil(Math.max(parseFloat((subtotal *
             this.state.settings.commission / 100.0).toString()) +
@@ -288,7 +266,6 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
             this.state.settings.minimalCommission) * 100.0) / 100.0;
 
         const commissionamountStr = Number(commissionamount).toFixed(2);
-        console.log(commissionamount, commissionamountStr);
 
         const total = Math.round((subtotal + (StoreUtils.getStoreState() === EDIT_BUY ? -1 : 1) *
             commissionamount) * 100) / 100;

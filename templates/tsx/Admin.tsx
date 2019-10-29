@@ -34,7 +34,6 @@ export class Admin extends React.Component<{}, constants.ISettings> {
     }
 
     public render() {
-        console.log("rendering...");
         if (!this.loaded) {
             return <div id="dvSettings">Loading...</div>;
         }
@@ -178,15 +177,11 @@ export class Admin extends React.Component<{}, constants.ISettings> {
     }
 
     private handleInputChange(event: any) {
-        console.log(event.target.value);
-        console.log(event.target.attributes.getNamedItem("name").value);
-        console.log(event.target);
         const name: string = event.target.attributes.getNamedItem("name").value;
         const updState: constants.ISettings = this.state;
         let val: string = event.target.value;
 
         if (val.length > 0) {
-            console.log(val.indexOf("."));
             if (name === constants.REFRESH_PERIOD /*&& parseInt(val) == NaN*/) {
                 val = parseInt(val, 10).toString();
             } else if (val.indexOf(".") > 0 && val[val.length - 1] !== "." && val.indexOf(".") <  val.length - 3) {
@@ -202,7 +197,6 @@ export class Admin extends React.Component<{}, constants.ISettings> {
         if (val === "NaN") {
             return;
         }
-        console.log("set value", val);
         switch (name) {
             case constants.COMMISSION :
                 updState.commission = val;

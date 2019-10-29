@@ -81,7 +81,6 @@ class CEHeader extends React.Component<{}, {}> {
     }
 
     private handleStateChange() {
-        console.log("Header handleStateChange: ", StoreUtils.getStoreState(), store.getState());
         if (isLoginPage() && StoreUtils.isLoggedIn()) {
             this.forceUpdate();
         }
