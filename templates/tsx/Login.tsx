@@ -97,16 +97,17 @@ export class CELogin extends React.Component<{}, {user: string, pwd: string, sta
             pwd: this.state.pwd,
             user: this.state.user
         };
+
         axios.post("/doLogin", data).then((response) => {
-                if (response.data === "Incorrect password") {
-                    that.setState({status: response.data});
-                } else {
-                    that.setState({status: ""});
-                    store.dispatch(setToken(response.data));
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
+            if (response.data === "Incorrect password") {
+                that.setState({status: response.data});
+            } else {
+                that.setState({status: ""});
+                store.dispatch(setToken(response.data));
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 }
 

@@ -1,5 +1,4 @@
 import * as React from "react";
-import axios from "axios";
 import * as constants from "./Constants";
 import {updateRate} from "./Actions";
 import store, {StoreUtils} from "./Store";
@@ -190,14 +189,16 @@ class RateService extends React.Component<{isGetRealData: boolean}, {rates: IRat
 
     private saveRates(rates: IRate[]) {
         const that = this;
-        axios.post("/saverates", rates, StoreUtils.authHeader())
-            .then((response) => {
-                that.setState({rates});
-                store.dispatch(updateRate(rates));
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        fetch("/saverates", {
+            body: JSON.stringify(rates),
+            headers: StoreUtils.authHeader(false),
+            method: "post"
+        }).then(() => {
+            that.setState({rates});
+            store.dispatch(updateRate(rates));
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     private getRates() {

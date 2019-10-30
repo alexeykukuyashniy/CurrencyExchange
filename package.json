@@ -8,6 +8,7 @@
     "@types/react-dom": "16.8.4",
     "@types/react-widgets": "^4.3.3",
     "@types/redux-form": "^8.1.5",
+    "@types/redux-thunk": "^2.1.0",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
     "js-test": "0.0.1",

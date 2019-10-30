@@ -1,5 +1,4 @@
 import * as React from "react";
-import axios from "axios";
 import * as constants from "./Constants";
 import store, {StoreUtils} from "./Store";
 import {view, updateSettings} from "./Actions";
@@ -256,14 +255,18 @@ export class Admin extends React.Component<{}, constants.ISettings> {
             RefreshPeriod: this.state.refreshPeriod,
             Surcharge: this.state.surcharge
         };
-        axios.post("/savesettings", dataSave, StoreUtils.authHeader()).then((response) => {
-                that.status = "Saved";
-                store.dispatch(updateSettings(data));
-                that.forceUpdate();
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+
+        fetch("/savesettings", {
+            body: JSON.stringify(dataSave),
+            headers: StoreUtils.authHeader(false),
+            method: "post"
+        }).then(() => {
+            that.status = "Saved";
+            store.dispatch(updateSettings(data));
+            that.forceUpdate();
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 }
 

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Field, reduxForm, SubmissionError } from "redux-form";
 import store, {StoreUtils} from "./Store";
 import {cancelEdit, saveEdit} from "./Actions";
-import axios from "axios";
 
 interface ITransferProps {
     amount: number;
@@ -103,13 +102,15 @@ export class Transfer extends React.Component<ITransferProps, ITransferState> {
             TransactionType: transactionType
         };
 
-        axios.post("/transaction", data, StoreUtils.authHeader())
-            .then((response) => {
-                store.dispatch(saveEdit()); // return to grid
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        fetch("/transaction", {
+            body: JSON.stringify(data),
+            headers: StoreUtils.authHeader(false),
+            method: "post"
+        }).then(() => {
+            store.dispatch(saveEdit()); // return to grid
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     private validateForm() {

@@ -1,5 +1,6 @@
 import { reducer as reduxFormReducer } from "redux-form";
-import { combineReducers, createStore } from "redux";
+import { combineReducers, createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 import {homeReducer, securityReducer} from "./Reducers";
 import {EDIT_BUY, EDIT_BUY_STEP2, EDIT_SELL, EDIT_SELL_STEP2, IStoreState} from "./Constants";
 
@@ -10,7 +11,7 @@ const reducers = combineReducers({
 });
 
 const store = createStore (
-    reducers, {}, undefined
+    reducers, applyMiddleware(thunk)
 );
 
 // utilities class
@@ -27,11 +28,15 @@ export class StoreUtils {
     }
 
     // return authorization header with jwt token
-    public static authHeader() {
+    public static authHeader(withHeaders: boolean = true): {} {
         if (StoreUtils.isLoggedIn()) {
             const st = store.getState().security;
             const token: string = (st !== undefined && st.token !== undefined ? st.token.toString() : "");
-            return {headers: {Authorization: "Bearer " + token}};
+            if (withHeaders) {
+                return {headers: {Authorization: "Bearer " + token}};
+            } else {
+                return {Authorization: "Bearer " + token};
+            }
         } else {
             return {};
         }

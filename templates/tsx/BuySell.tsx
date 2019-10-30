@@ -246,13 +246,15 @@ class BuySell extends React.Component<IBuySellProps, IBuySellState> {
                 TransactionType: op
             };
 
-            axios.post("/transaction", data, StoreUtils.authHeader())
-                .then((response) => {
-                    store.dispatch(saveEdit()); // return to grid
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            fetch("/transaction", {
+                body: JSON.stringify(data),
+                headers: StoreUtils.authHeader(false),
+                method: "post"
+            }).then(() => {
+                store.dispatch(saveEdit()); // return to grid
+            }).catch((error) => {
+                console.log(error);
+            });
         }
     }
 
