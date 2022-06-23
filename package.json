@@ -62,7 +62,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "html-loader": "^0.5.5",
     "jest": "^24.7.1",
-    "jsdom": "15.1.1",
+    "jsdom": "16.5.0",
     "jsdom-global": "3.0.2",
     "react-test-renderer": "^16.8.6",
     "replace-url-html-webpack-plugin": "^1.0.5",
